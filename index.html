@@ -16,20 +16,19 @@
         success: function(data) 
         {
           console.log(data);
+		  var groupsMap = data.GroupsMap
+		  
           var container = $('#content');
-
-          for (var key in data.GroupsMap) 
+          for (var key in groupsMap) 
           {
-            if (data.hasOwnProperty(key)) 
+            if (groupsMap.hasOwnProperty(key)) 
             {
               var h2 = $('<h2>').text(key);
-              var pre = $('<pre>').text(JSON.stringify(data.GroupsMap[key], null, 2));
-              jsonKeysContainer.append(h2);
-              jsonKeysContainer.append(pre);
+              var pre = $('<pre>').text(JSON.stringify(groupsMap[key], null, 2));
+              container.append(h2);
+              container.append(pre);
             }
           }
-          
-          container.append(pre);
         },
         error: function(xhr, status, error) 
         {
