@@ -16,9 +16,9 @@
         success: function(data) 
         {
           console.log(data);
-          var jsonContainer = $('#json-container');
+          var container = $('#content');
           var pre = $('<pre>').text(JSON.stringify(data, null, 2));
-          jsonContainer.append(pre);
+          container.append(pre);
         },
         error: function(xhr, status, error) 
         {
