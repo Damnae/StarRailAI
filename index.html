@@ -4,8 +4,9 @@
     <meta charset=utf-8>
     <title>html is a curse</title>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
   </head>
-  <body>
+  <body style="font-family:monochrome;color: white;background: #111111;">
     <h1>html is a curse</h1>
     <div id="content"></div>
     <script>
@@ -15,20 +16,85 @@
         dataType: 'json',
         success: function(data) 
         {
-          console.log(data);
-		  var groupsMap = data.GroupsMap
+          var groupsMap = data.GroupsMap
 		  
           var container = $('#content');
           for (var key in groupsMap) 
-          {
             if (groupsMap.hasOwnProperty(key)) 
             {
-              var h2 = $('<h2>').text(key);
-              var pre = $('<pre>').text(JSON.stringify(groupsMap[key], null, 2));
-              container.append(h2);
-              container.append(pre);
+              var group = groupsMap[key];
+              var factors = group.Factors;
+
+              container.append($('<h2>').text(key));
+              if (factors != undefined)
+                for (var i = 0; i < factors.length; i++) 
+                {
+                  var factor = factors[i];
+                  var combineOperator = factor.CombineOperator;
+                  var source = factor.Source;
+                  var mapper = factor.Mapper;
+
+                  container.append($('<h3>').text("Source"));
+                  if (combineOperator != undefined)
+                    container.append($('<p>').text("combineOperator: " + combineOperator));
+                  container.append($('<pre>').text(JSON.stringify(source, null, 2)));
+
+                  var ranges = mapper.Ranges;
+                  var chartContainer = $('<div>');
+
+                  container.append($('<h3>').text("Mapper"));
+                  container.append(chartContainer);
+
+                  var chartData = [];
+                  for (var i = 0; i < ranges.length; i++) 
+                  {
+                    var range = ranges[i];
+                    var xmin = range.xmin?.Value ?? 0;
+                    var xmax = range.xmax?.Value ?? 0;
+                    var ymin = range.ymin?.Value ?? 0;
+                    var ymax = range.ymax?.Value ?? 0;
+                    chartData.push({x: xmin, y: ymin, });
+                    chartData.push({x: xmax, y: ymax, });
+                  }
+
+                  const width = 640;
+                  const height = 400;
+                  const marginTop = 20;
+                  const marginRight = 20;
+                  const marginBottom = 30;
+                  const marginLeft = 40;
+
+                  const x = d3.scaleLinear(d3.extent(chartData, d => d.x), [marginLeft, width - marginRight]);
+                  const y = d3.scaleLinear(d3.extent(chartData, d => d.y), [height - marginBottom, marginTop]);
+                  const line = d3.line().x(d => x(d.x)).y(d => y(d.y));
+
+                  const svg = d3.create("svg")
+                      .attr("width", width)
+                      .attr("height", height);
+
+                  // x-axis.
+                  svg.append("g")
+                      .attr("transform", `translate(0,${height - marginBottom})`)
+                      .call(d3.axisBottom(x));
+
+                  // y-axis.
+                  svg.append("g")
+                      .attr("transform", `translate(${marginLeft},0)`)
+                      .call(d3.axisLeft(y));
+
+                  svg.append("path")
+                    .attr("fill", "none")
+                    .attr("stroke", "steelblue")
+                    .attr("stroke-width", 3)
+                    .attr("d", line(chartData));
+
+                  chartContainer.get(0).append(svg.node());
+
+                  //container.append($('<pre>').text(JSON.stringify(ranges, null, 2)));
+                }
+
+              //container.append($('<pre>').text(JSON.stringify(group, null, 2)));
             }
-          }
         },
         error: function(xhr, status, error) 
         {
