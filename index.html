@@ -7,8 +7,24 @@
   </head>
   <body>
     <h1>html is a curse</h1>
+    <div id="content"></div>
     <script>
-      $("h1").css( "border", "2px solid red" );
+      $.ajax({
+        url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAI/ComplexSkillAIGlobalGroup/Global_FactorGroups.json',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) 
+        {
+          console.log(data);
+          var jsonContainer = $('#json-container');
+          var pre = $('<pre>').text(JSON.stringify(data, null, 2));
+          jsonContainer.append(pre);
+        },
+        error: function(xhr, status, error) 
+        {
+          console.error('Error:', error);
+        },
+      });
     </script>
   </body>
 </html>
