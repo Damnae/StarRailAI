@@ -2,98 +2,177 @@
 <html lang=en>
   <head>
     <meta charset=utf-8>
-    <title>html is a curse</title>
+    <title>StarRail AI</title>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <style>
+      body
+      {
+        margin: 1vh;
+      }
+
+      #content 
+      {
+        display: flex;
+        flex-direction: row;
+        height: 98vh;
+        margin: 0;
+      }
+      
+      .half 
+      {
+        flex: 1;
+        overflow: auto;
+        margin: 1vh;
+        padding: 1vh;
+        background-color: #010105;
+      }
+
+    </style>
   </head>
   <body style="font-family:monochrome;color: white;background: #111111;">
-    <h1>html is a curse</h1>
-    <div id="content"></div>
+    
+    <div id="content">
+      <div class="half">
+        <h1>Characters</h1>
+        <div id="charactersContainer"></div>
+      </div>
+      <div class="half">
+        <h1>Weight Groups</h1>
+        <div id="weightGroupsContainer"></div>
+      </div>
+    </div>
+
     <script>
+
+      function createGroupView(key, groupData)
+      {
+        var factors = groupData.Factors;
+        
+        var container = $(`<div id="group_${key}" class="group">`);
+        container.append($('<h2>').text(key));
+        if (factors != undefined)
+          for (var i = 0; i < factors.length; i++) 
+          {
+            var factor = factors[i];
+            container.append(createFactorView(factor));
+          }
+
+        //container.append($('<pre>').text(JSON.stringify(groupData, null, 2)));
+        return container;
+      }
+
+      function createFactorView(factorData)
+      {
+        var container = $(`<div class="factor">`);
+
+        var combineOperator = factorData.CombineOperator;
+        var source = factorData.Source;
+        var mapper = factorData.Mapper;
+
+        container.append($('<h3>').text("Source"));
+        if (combineOperator != undefined)
+          container.append($('<p>').text("combineOperator: " + combineOperator));
+        container.append($('<pre>').text(JSON.stringify(source, null, 2)));
+
+        var ranges = mapper.Ranges;
+        var chartContainer = $('<div>');
+
+        container.append($('<h3>').text("Mapper"));
+        container.append(chartContainer);
+
+        var chartData = [];
+        for (var i = 0; i < ranges.length; i++) 
+        {
+          var range = ranges[i];
+          var xmin = range.xmin?.Value ?? 0;
+          var xmax = range.xmax?.Value ?? 0;
+          var ymin = range.ymin?.Value ?? 0;
+          var ymax = range.ymax?.Value ?? 0;
+          chartData.push({x: xmin, y: ymin, });
+          chartData.push({x: xmax, y: ymax, });
+        }
+
+        const width = 640;
+        const height = 400;
+        const marginTop = 20;
+        const marginRight = 20;
+        const marginBottom = 30;
+        const marginLeft = 40;
+
+        const x = d3.scaleLinear(d3.extent(chartData, d => d.x), [marginLeft, width - marginRight]);
+        const y = d3.scaleLinear(d3.extent(chartData, d => d.y), [height - marginBottom, marginTop]);
+        const line = d3.line().x(d => x(d.x)).y(d => y(d.y));
+
+        const svg = d3.create("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        // x-axis.
+        svg.append("g")
+            .attr("transform", `translate(0,${height - marginBottom})`)
+            .call(d3.axisBottom(x));
+
+        // y-axis.
+        svg.append("g")
+            .attr("transform", `translate(${marginLeft},0)`)
+            .call(d3.axisLeft(y));
+
+        svg.append("path")
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-width", 3)
+          .attr("d", line(chartData));
+
+        chartContainer.get(0).append(svg.node());
+
+        //container.append($('<pre>').text(JSON.stringify(ranges, null, 2)));
+
+        return container;
+      }
+
+      function cleanCharacterJsonName(filename)
+      {
+        return filename.substring("Avatar_".length).replace("_Config.json", "").replace("_", " ");
+      }
+
+      $.ajax({
+        url: 'https://api.github.com/repos/Dimbreath/StarRailData/git/trees/master:Config/ConfigCharacter/Avatar',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data)
+        {
+          var tree = data.tree;
+
+          var container = $('#charactersContainer');          
+          for (var i = 0; i < tree.length; i++) 
+          {
+            var characterFile = tree[i];
+            container.append($(`<h2 id="${characterFile.path}">`).text(cleanCharacterJsonName(characterFile.path)));
+          }
+
+          //container.append($('<pre>').text(JSON.stringify(data, null, 2)));
+        },
+        error: function(xhr, status, error) 
+        {
+          console.error('Error:', error);
+        },
+      });
+
       $.ajax({
         url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAI/ComplexSkillAIGlobalGroup/Global_FactorGroups.json',
         type: 'GET',
         dataType: 'json',
         success: function(data) 
         {
-          var groupsMap = data.GroupsMap
+          var groupsMap = data.GroupsMap;
 		  
-          var container = $('#content');
+          var container = $('#weightGroupsContainer');
           for (var key in groupsMap) 
             if (groupsMap.hasOwnProperty(key)) 
             {
               var group = groupsMap[key];
-              var factors = group.Factors;
-
-              container.append($('<h2>').text(key));
-              if (factors != undefined)
-                for (var i = 0; i < factors.length; i++) 
-                {
-                  var factor = factors[i];
-                  var combineOperator = factor.CombineOperator;
-                  var source = factor.Source;
-                  var mapper = factor.Mapper;
-
-                  container.append($('<h3>').text("Source"));
-                  if (combineOperator != undefined)
-                    container.append($('<p>').text("combineOperator: " + combineOperator));
-                  container.append($('<pre>').text(JSON.stringify(source, null, 2)));
-
-                  var ranges = mapper.Ranges;
-                  var chartContainer = $('<div>');
-
-                  container.append($('<h3>').text("Mapper"));
-                  container.append(chartContainer);
-
-                  var chartData = [];
-                  for (var i = 0; i < ranges.length; i++) 
-                  {
-                    var range = ranges[i];
-                    var xmin = range.xmin?.Value ?? 0;
-                    var xmax = range.xmax?.Value ?? 0;
-                    var ymin = range.ymin?.Value ?? 0;
-                    var ymax = range.ymax?.Value ?? 0;
-                    chartData.push({x: xmin, y: ymin, });
-                    chartData.push({x: xmax, y: ymax, });
-                  }
-
-                  const width = 640;
-                  const height = 400;
-                  const marginTop = 20;
-                  const marginRight = 20;
-                  const marginBottom = 30;
-                  const marginLeft = 40;
-
-                  const x = d3.scaleLinear(d3.extent(chartData, d => d.x), [marginLeft, width - marginRight]);
-                  const y = d3.scaleLinear(d3.extent(chartData, d => d.y), [height - marginBottom, marginTop]);
-                  const line = d3.line().x(d => x(d.x)).y(d => y(d.y));
-
-                  const svg = d3.create("svg")
-                      .attr("width", width)
-                      .attr("height", height);
-
-                  // x-axis.
-                  svg.append("g")
-                      .attr("transform", `translate(0,${height - marginBottom})`)
-                      .call(d3.axisBottom(x));
-
-                  // y-axis.
-                  svg.append("g")
-                      .attr("transform", `translate(${marginLeft},0)`)
-                      .call(d3.axisLeft(y));
-
-                  svg.append("path")
-                    .attr("fill", "none")
-                    .attr("stroke", "steelblue")
-                    .attr("stroke-width", 3)
-                    .attr("d", line(chartData));
-
-                  chartContainer.get(0).append(svg.node());
-
-                  //container.append($('<pre>').text(JSON.stringify(ranges, null, 2)));
-                }
-
-              //container.append($('<pre>').text(JSON.stringify(group, null, 2)));
+              container.append(createGroupView(key, group));
             }
         },
         error: function(xhr, status, error) 
@@ -101,6 +180,7 @@
           console.error('Error:', error);
         },
       });
+      
     </script>
   </body>
 </html>
