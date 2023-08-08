@@ -234,7 +234,10 @@
 
       function cleanCharacterJsonName(filename)
       {
-        return filename.substring("Avatar_".length).replace("_Config.json", "").replace("_", " ");
+        var name = filename.substring("Avatar_".length).replace("_Config.json", "").replace("_00", "");
+        name = name.replace("_00", "").replace("_", " ");
+        name = name.replace(/^Ren$/, "Blade").replace("Klara", "Clara").replace("Mar 7th", "March 7th").replace("Silwolf", "SilverWolf");
+        return name;
       }
 
       // INITIALISATION
@@ -256,8 +259,6 @@
               var characterFile = tree[i];
               container.append(createCharacterView(characterFile));
             }
-
-
           },
           error: function(xhr, status, error) 
           {
