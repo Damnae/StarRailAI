@@ -28,6 +28,19 @@
         background-color: #010105;
       }
 
+      .section 
+      {
+      }
+
+      .section-content 
+      {
+        display: none;
+      }
+
+      .section-title 
+      {
+        cursor: pointer;
+      }
     </style>
   </head>
   <body style="font-family:monochrome;color: white;background: #111111;">
@@ -44,6 +57,8 @@
     </div>
 
     <script>
+
+      // WEIGHTS
 
       function createGroupView(key, groupData)
       {
@@ -131,56 +146,133 @@
         return container;
       }
 
+      // CHARACTERS
+
+      function createCharacterView(characterFileData)
+      {
+        var container = $(`<div id="${characterFileData.path}" class="character section">`);
+
+        var title = $(`<h2 class="section-title">`).text(cleanCharacterJsonName(characterFileData.path));
+        var content = $(`<div class="section-content">`);
+
+        container.append(title);
+        container.append(content);
+
+        title.click(function() {
+          content.slideToggle();
+
+          if (!content.data('opened')) 
+          {
+            $.ajax({
+              url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigCharacter/Avatar/' + characterFileData.path,
+              type: 'GET',
+              dataType: 'json',
+              cache: true,
+              success: function(data)
+              {
+                content.append(createCharacterDetailView(data));
+              },
+              error: function(xhr, status, error) 
+              {
+                console.error('Error:', error);
+              },
+            });
+            content.data('opened', true);
+          }
+        });
+
+        return container;
+      }
+
+      function createCharacterDetailView(data)
+      {
+        var container = $(`<div class="characterDetail">`);
+        
+        var skillList = data.SkillList;
+        for (var i = 0; i < skillList.length; i++) 
+        {
+          var skill = skillList[i];
+          container.append(createSkillView(skill));
+        }
+        
+        //container.append($('<pre>').text(JSON.stringify(data, null, 2)));
+        return container;
+      }
+
+      function createSkillView(skillData)
+      {
+        var container = $(`<div class="characterSkill">`);
+        
+        var name = skillData.Name;
+        var type = skillData.SkillType ?? "BasicATK";
+        var ai = skillData.ComplexSkillAI;
+
+        container.append($('<h3>').text(`${type} (${name})`));
+        container.append($('<pre>').text(JSON.stringify(ai, null, 2)));
+
+        //container.append($('<pre>').text(JSON.stringify(skillData, null, 2)));
+        return container;
+      }
+
       function cleanCharacterJsonName(filename)
       {
         return filename.substring("Avatar_".length).replace("_Config.json", "").replace("_", " ");
       }
 
-      $.ajax({
-        url: 'https://api.github.com/repos/Dimbreath/StarRailData/git/trees/master:Config/ConfigCharacter/Avatar',
-        type: 'GET',
-        dataType: 'json',
-        success: function(data)
-        {
-          var tree = data.tree;
+      // INITIALISATION
 
-          var container = $('#charactersContainer');          
-          for (var i = 0; i < tree.length; i++) 
+      function initialize()
+      {
+        $.ajax({
+          url: 'https://api.github.com/repos/Dimbreath/StarRailData/git/trees/master:Config/ConfigCharacter/Avatar',
+          type: 'GET',
+          dataType: 'json',
+          cache: true,
+          success: function(data)
           {
-            var characterFile = tree[i];
-            container.append($(`<h2 id="${characterFile.path}">`).text(cleanCharacterJsonName(characterFile.path)));
-          }
+            var tree = data.tree;
 
-          //container.append($('<pre>').text(JSON.stringify(data, null, 2)));
-        },
-        error: function(xhr, status, error) 
-        {
-          console.error('Error:', error);
-        },
-      });
-
-      $.ajax({
-        url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAI/ComplexSkillAIGlobalGroup/Global_FactorGroups.json',
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) 
-        {
-          var groupsMap = data.GroupsMap;
-		  
-          var container = $('#weightGroupsContainer');
-          for (var key in groupsMap) 
-            if (groupsMap.hasOwnProperty(key)) 
+            var container = $('#charactersContainer');          
+            for (var i = 0; i < tree.length; i++) 
             {
-              var group = groupsMap[key];
-              container.append(createGroupView(key, group));
+              var characterFile = tree[i];
+              container.append(createCharacterView(characterFile));
             }
-        },
-        error: function(xhr, status, error) 
-        {
-          console.error('Error:', error);
-        },
-      });
-      
+
+
+          },
+          error: function(xhr, status, error) 
+          {
+            console.error('Error:', error);
+          },
+        });
+
+        $.ajax({
+          url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAI/ComplexSkillAIGlobalGroup/Global_FactorGroups.json',
+          type: 'GET',
+          dataType: 'json',
+          cache: true,
+          success: function(data) 
+          {
+            var groupsMap = data.GroupsMap;
+        
+            var container = $('#weightGroupsContainer');
+            for (var key in groupsMap) 
+              if (groupsMap.hasOwnProperty(key)) 
+              {
+                var group = groupsMap[key];
+                container.append(createGroupView(key, group));
+              }
+          },
+          error: function(xhr, status, error) 
+          {
+            console.error('Error:', error);
+          },
+        });
+      }
+
+      $(function() { initialize(); });
+
     </script>
   </body>
 </html>
