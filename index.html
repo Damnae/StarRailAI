@@ -152,7 +152,7 @@
         }
 
         var ranges = mapper.Ranges;
-        ranges.sort((a, b) => (a.xmin?.Value ?? 0) - (b.xmin?.Value ?? 0))
+        ranges.sort((a, b) => (a.xmin?.Value ?? 0) - (b.xmin?.Value ?? 0));
 
         var chartContainer = $('<div>');
         container.append($('<h3>').text("Mapper"));
@@ -276,6 +276,7 @@
         {
           var power = ai.SkillBasicPower?.Value;
           var groups = ai.Groups;
+          groups.sort((a, b) => (b.Weight?.Value ?? 1) - (a.Weight?.Value ?? 1));
 
           var table = $('<table>');
           table.append($('<tr><th>Weight</th><th>Group</th><th>Summary</th></tr>'));
