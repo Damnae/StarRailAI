@@ -8,6 +8,9 @@
     <style>
       body
       {
+        font-family:monochrome;
+        color: #ffffff;
+        background: #111111;
         margin: 1vh;
       }
 
@@ -42,6 +45,33 @@
         cursor: pointer;
       }
 
+      h1 
+      {
+        padding: .2em .5em;
+        margin: .2em;
+      }
+
+      h2 
+      {
+        background-color:rgb(9, 9, 41);
+        padding: .2em .5em;
+      }
+
+      h3
+      {
+        background-color:rgb(9, 9, 26);
+        padding: .1em .25em;
+      }
+
+      .characterSkill
+      {
+        margin-left:2em;
+      }
+      .characterSkill h3
+      {
+        margin-left:-1em;
+      }
+
       a[href^="#"] 
       {
         text-decoration: none;
@@ -50,7 +80,7 @@
       }
     </style>
   </head>
-  <body style="font-family:monochrome;color: white;background: #111111;">
+  <body>
     
     <div id="content">
       <div class="half">
@@ -67,12 +97,13 @@
 
       // WEIGHTS
 
-      function createGroupView(key, groupData)
+      function createGroupView(groupName, groupData)
       {
         var factors = groupData.Factors;
         
-        var container = $(`<div id="group_${key}" class="group">`);
-        container.append($('<h2>').text(key));
+        var container = $(`<div id="group_${groupName}" class="group">`);
+        container.append($('<h2>').text(groupName));
+        container.append($('<p>').text(explainGroup(groupName)));
         if (factors != undefined)
           for (var i = 0; i < factors.length; i++) 
           {
@@ -91,11 +122,17 @@
         var combineOperator = factorData.CombineOperator;
         var source = factorData.Source;
         var mapper = factorData.Mapper;
+        var postProcess = factorData.PostProcess;
 
         container.append($('<h3>').text("Source"));
         if (combineOperator != undefined)
           container.append($('<p>').text("combineOperator: " + combineOperator));
         container.append($('<pre>').text(JSON.stringify(source, null, 2)));
+        if (postProcess != undefined)
+        {
+          container.append($('<h3>').text("PostProcess"));
+          container.append($('<pre>').text(JSON.stringify(postProcess, null, 2)));
+        }
 
         var ranges = mapper.Ranges;
         var chartContainer = $('<div>');
@@ -222,25 +259,47 @@
           var groups = ai.Groups;
 
           var table = $('<table>');
-          table.append($('<tr><th>Weight</th><th>Group</th></tr>'));
+          table.append($('<tr><th>Weight</th><th>Group</th><th>Summary</th></tr>'));
           for (var i = 0; i < groups.length; i++) 
           {
             var group = groups[i];
             var groupName = group.GroupName;
             var groupWeight = parseFloat((group.Weight?.Value ?? 1).toFixed(4));
+            var info = explainGroup(groupName);
 
-            var row = $(`<tr><td>${groupWeight}</td><td><a href="#group_${groupName}">${groupName}</a></td></tr>`);
+            var row = $(`<tr><td>${groupWeight}</td><td><a href="#group_${groupName}">${groupName}</a></td><td>${info}</td></tr>`);
             table.append(row);
           }
           container.append(table);
 
           if (power != undefined)
-            container.append($('<p>').text(`Power: ${power}`));
+            container.append($('<p>').text(`Power: ${parseFloat(power.toFixed(4))}`));
         }
 
         //container.append($('<pre>').text(JSON.stringify(skillData, null, 2)));
         return container;
       }
+
+      // CLEANUP
+
+      const groupSummaries = 
+      {
+        BaseWeight: 'A plain weight with no condition.',
+        Add01_Common_CompareEnemyDPT: 'Increases as the target DPT (damage potential?) increases.',
+        Add01_Common_EnemysNumber: 'Increases as the number a enemy alive increases (up to 5).',
+        AddNP_Common_BPSkill: 'Increases as team skill points increase. Extremely negative at 0 skill points.',
+        AddpP_Common_SelfNeighbour: 'Increases abruptly when the target has 2 neighbors.',
+        BasePp_Common_SingleAttack: 'Increases as the target hp% decreases. Increases for weaker but not the weakest targets. Prevents use if the target is low priority.',
+        BasePp_Common_WeakBreak: 'Increases if the target is broken or weak to element. Prevents use if the target is low priority.',
+        Ultra_Common_SingleAttack: 'Increases as the target\'s hp% nears 50%. Prevents use if the target is low priority.',
+        
+        Base_Bronya_CompareDPT: 'Increases as the target DPT (damage potential?) increases. Starts slow but very steep around 85%. Multiplied by path-specific weights, which are higher for damage oriented paths.',
+        Base_Tingyun_CompareDPT: 'Linearly increases as the target DPT (damage potential?) increases. Multiplied by path-specific weights, which are higher for damage oriented paths',
+        Base_Natasha_SingleHeal: 'Increases as the target hp% decreases. Reaches 0 at 80% hp',
+        AddNP_Sushang_BPSkill_Break: 'Increases if the target is broken.',
+        Add01_Broyan_CompareActionDelay: 'Increases as the team member\'s action delay increases. Prevents use if the team member is ready.',
+        Ultra_Natasha_TeamHPCheck: 'Increases as the lowest team member\'s hp% decreases. Prevents use at or above 50% hp.',
+      };
 
       function cleanCharacterJsonName(filename)
       {
@@ -248,6 +307,13 @@
         name = name.replace("_00", "").replace("_", " ");
         name = name.replace(/^Ren$/, "Blade").replace("Klara", "Clara").replace("Mar 7th", "March 7th").replace("Silwolf", "SilverWolf");
         return name;
+      }
+
+      function explainGroup(groupName)
+      {
+        if (groupSummaries.hasOwnProperty(groupName))
+          return groupSummaries[groupName];
+        return '';
       }
 
       // INITIALISATION
