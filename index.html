@@ -208,7 +208,25 @@
         var ai = skillData.ComplexSkillAI;
 
         container.append($('<h3>').text(`${type} (${name})`));
-        container.append($('<pre>').text(JSON.stringify(ai, null, 2)));
+
+        if (ai != undefined)
+        {
+          var power = ai.SkillBasicPower?.Value;
+          var groups = ai.Groups;
+
+          var table = $('<table>');
+          table.append($('<tr><th>Group</th><th>Weight</th></tr>'));
+          for (var i = 0; i < groups.length; i++) 
+          {
+            var group = groups[i];
+            var row = $(`<tr><td>${group.GroupName}</td><td>${group.Weight?.Value ?? 1}</td></tr>`);
+            table.append(row);
+          }
+          container.append(table);
+
+          if (power != undefined)
+            container.append($('<p>').text(`Power: ${power}`));
+        }
 
         //container.append($('<pre>').text(JSON.stringify(skillData, null, 2)));
         return container;
