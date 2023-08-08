@@ -41,6 +41,13 @@
       {
         cursor: pointer;
       }
+
+      a[href^="#"] 
+      {
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+      }
     </style>
   </head>
   <body style="font-family:monochrome;color: white;background: #111111;">
@@ -219,7 +226,7 @@
           for (var i = 0; i < groups.length; i++) 
           {
             var group = groups[i];
-            var row = $(`<tr><td>${group.GroupName}</td><td>${group.Weight?.Value ?? 1}</td></tr>`);
+            var row = $(`<tr><td><a href="#group_${group.GroupName}">${group.GroupName}</a></td><td>${group.Weight?.Value ?? 1}</td></tr>`);
             table.append(row);
           }
           container.append(table);
