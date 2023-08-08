@@ -222,11 +222,14 @@
           var groups = ai.Groups;
 
           var table = $('<table>');
-          table.append($('<tr><th>Group</th><th>Weight</th></tr>'));
+          table.append($('<tr><th>Weight</th><th>Group</th></tr>'));
           for (var i = 0; i < groups.length; i++) 
           {
             var group = groups[i];
-            var row = $(`<tr><td><a href="#group_${group.GroupName}">${group.GroupName}</a></td><td>${group.Weight?.Value ?? 1}</td></tr>`);
+            var groupName = group.GroupName;
+            var groupWeight = parseFloat((group.Weight?.Value ?? 1).toFixed(4));
+
+            var row = $(`<tr><td>${groupWeight}</td><td><a href="#group_${groupName}">${groupName}</a></td></tr>`);
             table.append(row);
           }
           container.append(table);
