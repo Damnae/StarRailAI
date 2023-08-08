@@ -112,7 +112,7 @@
 
     <script>
 
-      // WEIGHTS
+      // WEIGHT GROUPS
 
       function createGroupView(groupName, groupData)
       {
@@ -152,8 +152,9 @@
         }
 
         var ranges = mapper.Ranges;
-        var chartContainer = $('<div>');
+        ranges.sort((a, b) => (a.xmin?.Value ?? 0) - (b.xmin?.Value ?? 0))
 
+        var chartContainer = $('<div>');
         container.append($('<h3>').text("Mapper"));
         container.append(chartContainer);
 
@@ -165,6 +166,7 @@
           var xmax = range.xmax?.Value ?? 0;
           var ymin = range.ymin?.Value ?? 0;
           var ymax = range.ymax?.Value ?? 0;
+
           chartData.push({x: xmin, y: ymin, });
           chartData.push({x: xmax, y: ymax, });
         }
@@ -299,9 +301,12 @@
 
       // CLEANUP
 
+      // BaseType order: Unknown, Destruction, Hunt, Erudition, Harmony, Nihility, Preservation, Abundance (AvatarBaseType.json)
+
       const groupSummaries = 
       {
-        BaseWeight: 'A plain weight with no condition.',
+        BaseWeight: 'A plain weight with no condition.',        
+        Base_Common_BaseTypeFactor: 'A weight based on path, where Destruction = Hunt = Erudition > Nihility > Preservation = Abundance = 0',
         Add01_Common_CompareEnemyDPT: 'Increases as the target DPT (damage potential?) increases.',
         Add01_Common_EnemysNumber: 'Increases as the number a enemy alive increases (up to 5).',
         AddNP_Common_BPSkill: 'Increases as team skill points increase. Extremely negative at 0 skill points.',
@@ -309,7 +314,7 @@
         BasePp_Common_SingleAttack: 'Increases as the target hp% decreases. Increases for weaker but not the weakest targets. Prevents use if the target is low priority.',
         BasePp_Common_WeakBreak: 'Increases if the target is broken or weak to element. Prevents use if the target is low priority.',
         Ultra_Common_SingleAttack: 'Increases as the target\'s hp% nears 50%. Prevents use if the target is low priority.',
-        
+
         Base_Bronya_CompareDPT: 'Increases as the target DPT (damage potential?) increases. Starts slow but very steep around 85%. Multiplied by path-specific weights, which are higher for damage oriented paths.',
         Base_Tingyun_CompareDPT: 'Linearly increases as the target DPT (damage potential?) increases. Multiplied by path-specific weights, which are higher for damage oriented paths',
         Base_Natasha_SingleHeal: 'Increases as the target hp% decreases. Reaches 0 at 80% hp',
