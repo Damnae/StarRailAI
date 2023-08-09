@@ -255,7 +255,9 @@
         for (var i = 0; i < skillList.length; i++) 
         {
           var skill = skillList[i];
-          container.append(createSkillView(skill));
+
+          if (skill.ComplexSkillAI != undefined)
+            container.append(createSkillView(skill));
         }
         
         //container.append($('<pre>').text(JSON.stringify(data, null, 2)));
