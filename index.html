@@ -1,101 +1,13 @@
 <!doctype html>
 <html lang=en>
   <head>
+
     <meta charset=utf-8>
     <title>StarRail AI</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
-    <style>
-      body
-      {
-        font-family: 'Sofia Sans',sans-serif !important;
-        color: #ffffff;
-        background: #111111;
-        margin: 1vh;
-      }
 
-      #content 
-      {
-        display: flex;
-        flex-direction: row;
-        height: 98vh;
-        margin: 0;
-      }
-      
-      .half 
-      {
-        flex: 1;
-        overflow: auto;
-        margin: 1vh;
-        padding: 1vh;
-        background-color: #010105;
-      }
-
-      .section 
-      {
-      }
-
-      .section-content 
-      {
-        display: none;
-      }
-
-      .section-title 
-      {
-        cursor: pointer;
-      }
-
-      h1 
-      {
-        padding: .2em .5em;
-        margin: .2em;
-      }
-
-      h2 
-      {
-        background-color:rgb(9, 9, 41);
-        padding: .2em .5em;
-      }
-
-      h3
-      {
-        background-color:rgb(9, 9, 26);
-        padding: .1em .25em;
-      }
-
-      .characterSkill
-      {
-        margin-left:2em;
-      }
-      .characterSkill h3
-      {
-        margin-left:-1em;
-      }
-      .characterSkill table
-      {
-        width:100%;
-      }
-      .characterSkill td:nth-child(1)
-      {
-        text-align: center;
-        width:5%;
-      }
-      .characterSkill td:nth-child(2)
-      {
-        width:35%;
-      }
-      .characterSkill td:nth-child(3)
-      {
-        width:60%;
-      }
-
-      a[href^="#"] 
-      {
-        text-decoration: none;
-        color: inherit;
-        cursor: pointer;
-      }
-    </style>
   </head>
   <body>
     
@@ -178,9 +90,9 @@
         const marginBottom = 30;
         const marginLeft = 40;
 
-        const x = d3.scaleLinear(d3.extent(chartData, d => d.x), [marginLeft, width - marginRight]);
-        const y = d3.scaleLinear(d3.extent(chartData, d => d.y), [height - marginBottom, marginTop]);
-        const line = d3.line().x(d => x(d.x)).y(d => y(d.y));
+        const xScale = d3.scaleLinear(d3.extent(chartData, d => d.x), [marginLeft, width - marginRight]);
+        const yScale = d3.scaleLinear(d3.extent(chartData, d => d.y), [height - marginBottom, marginTop]);
+        const line = d3.line().x(d => xScale(d.x)).y(d => yScale(d.y));
 
         const svg = d3.create("svg")
             .attr("width", width)
@@ -189,12 +101,12 @@
         // x-axis.
         svg.append("g")
             .attr("transform", `translate(0,${height - marginBottom})`)
-            .call(d3.axisBottom(x));
+            .call(d3.axisBottom(xScale));
 
         // y-axis.
         svg.append("g")
             .attr("transform", `translate(${marginLeft},0)`)
-            .call(d3.axisLeft(y));
+            .call(d3.axisLeft(yScale));
 
         svg.append("path")
           .attr("fill", "none")

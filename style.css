@@ -1,0 +1,90 @@
+
+body
+{
+    font-family: 'Sofia Sans',sans-serif !important;
+    color: #ffffff;
+    background: #111111;
+    margin: 1vh;
+}
+
+#content 
+{
+    display: flex;
+    flex-direction: row;
+    height: 98vh;
+    margin: 0;
+}
+
+.half 
+{
+    flex: 1;
+    overflow: auto;
+    margin: 1vh;
+    padding: 1vh;
+    background-color: #010105;
+}
+
+.section 
+{
+}
+
+.section-content 
+{
+    display: none;
+}
+
+.section-title 
+{
+    cursor: pointer;
+}
+
+h1 
+{
+    padding: .2em .5em;
+    margin: .2em;
+}
+
+h2 
+{
+    background-color:rgb(9, 9, 41);
+    padding: .2em .5em;
+}
+
+h3
+{
+    background-color:rgb(9, 9, 26);
+    padding: .1em .25em;
+}
+
+.characterSkill
+{
+    margin-left:2em;
+}
+.characterSkill h3
+{
+    margin-left:-1em;
+}
+.characterSkill table
+{
+    width:100%;
+}
+.characterSkill td:nth-child(1)
+{
+    text-align: center;
+    width:5%;
+}
+.characterSkill td:nth-child(2)
+{
+    width:35%;
+}
+.characterSkill td:nth-child(3)
+{
+    width:60%;
+}
+
+a[href^="#"] 
+{
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+}
