@@ -82,6 +82,24 @@ h3
     width:60%;
 }
 
+.source-opener
+{
+    cursor: pointer;
+}
+.source-folded
+{
+    display: none;
+}
+
+.explanation
+{
+    padding-left:1em;
+}
+.code
+{
+    color: #aaaaaa;
+}
+
 a[href^="#"] 
 {
     text-decoration: none;
