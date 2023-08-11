@@ -3,7 +3,7 @@
   <head>
 
     <meta charset=utf-8>
-    <title>StarRail AI</title>
+    <title>StarRail AI - Auto</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
@@ -259,7 +259,7 @@
       function cleanCharacterJsonName(filename)
       {
         var name = filename.substring("Avatar_".length).replace("_Config.json", "").replace("_00", "");
-        name = name.replace("_00", "").replace("_", " ");
+        name = name.replace("_00", "").replace(/_/g, " ");
         name = name.replace(/^Ren$/, "Blade").replace("Klara", "Clara").replace("Mar 7th", "March 7th").replace("Silwolf", "SilverWolf");
         return name;
       }
