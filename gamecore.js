@@ -1,6 +1,31 @@
 
 var gamecoreFunctions = 
 {
+  // AI DECISIONS
+
+  AIDecisionConfig: function(data, container) {
+    container.append($('<div>').html(`<h3>Decision <span class="code">${data.DecisionName}</span></h3>`));
+    container.append($('<h4>').html(`Conditions:`));
+    var conditions = data.ConsiderAxisList;
+    for (var i = 0; i < conditions.length; i++)
+    {
+      var condition = conditions[i];
+      container.append(createGamecoreView(condition));
+    }
+    container.append($('<h4>').html(`Actions:`));
+    container.append(createGamecoreView(data.RootTask));
+  },
+
+  AIStepperDecisionGroupConfig: function(data, container) {
+    container.append($('<div>').html(`<h3>Decision group <span class="code">${data.DecisionGroupName}</span></h3>`));
+    var decisions = data.DecisionList;
+    for (var i = 0; i < decisions.length; i++)
+    {
+      var decision = decisions[i];
+      container.append(createGamecoreView(decision));
+    }
+  },
+
   // AXIS
 
   CheckPredicateAxis: function(data, container) {

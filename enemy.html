@@ -92,38 +92,7 @@
       function createDecisionView(data)
       {
         var container = $(`<div class="characterSkill">`);
-        
-        var evaluator = data.ScoreEvaluatorType;
-        var weight = parseFloat((data.Weight?.Value ?? 1).toFixed(4));
-
-        container.append($('<h3>').text(`${data.DecisionName} (${evaluator} weight = ${weight})`));
-          
-          // Check Monster_W2_Xuanlu_10_AI_RL.json
-        //container.append(createGamecoreView(data));
-
-        container.append($('<h4>').text('Conditions'));
-        var conditions = data.ConsiderAxisList;
-        for (var j = 0; j < conditions.length; j++) 
-        {
-          var condition = conditions[j];
-          container.append(createGamecoreView(condition));
-        }
-
-        container.append($('<h4>').text('Actions'));
-        var tasks = data.RootTask?.TaskList;
-        if (tasks == undefined)
-        {
-          if (data.RootTask == undefined)
-            container.append($('<pre>').text(JSON.stringify(data, null, 2)));
-          else container.append(createGamecoreView(data.RootTask));
-        }
-        else
-          for (var j = 0; j < tasks.length; j++) 
-          {
-            var task = tasks[j];
-            container.append(createGamecoreView(task));
-          }
-
+        container.append(createGamecoreView(data));
         return container;
       }
 

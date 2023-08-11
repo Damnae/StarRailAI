@@ -42,6 +42,11 @@ h3
     padding: .1em .25em;
 }
 
+h4
+{
+    margin: .5em 0;
+}
+
 .characterSkill
 {
     margin-left:2em;
