@@ -77,7 +77,7 @@ var gamecoreFunctions =
   },
 
   ByIsContainModifier: function(data, container) {
-    container.append($('<div>').html(`Check <span class="code">${data.TargetType?.Alias}</span> contains modifier <span class="code">${data.ModifierName}</span>`));
+    container.append($('<div>').html(`Check <span class="code">${data.TargetType?.Alias}</span> has modifier <span class="code">${data.ModifierName}</span>`));
   },
 
   ByCompareMonsterPhase: function(data, container) {
@@ -125,7 +125,9 @@ var gamecoreFunctions =
   // SELECTORS
 
   AIModifierNameSelector: function(data, container) {
-    container.append($('<div>').html(`Select by modifier <span class="code">${data.ModifierName}</span>.`));
+    if (data.ModifierCaster?.Alias != undefined)
+        container.append($('<div>').html(`Select by <span class="code">${data.ModifierCaster?.Alias}</span>\'s modifier <span class="code">${data.ModifierName}</span>.`));
+      else container.append($('<div>').html(`Select by modifier <span class="code">${data.ModifierName}</span>.`));
   },
 
   AIPropertySelector: function(data, container) {
@@ -192,7 +194,7 @@ var gamecoreFunctions =
     var successTasks = data.SuccessTaskList;
     if (successTasks != undefined)
     {
-      container.append($('<div>').html(`Is True:`));
+      container.append($('<div>').html(`Then:`));
       for (var i = 0; i < successTasks.length; i++)
       {
         var task = successTasks[i];
@@ -203,7 +205,7 @@ var gamecoreFunctions =
     var failedTasks = data.FailedTaskList;
     if (failedTasks != undefined)
     {
-      container.append($('<div>').html(`Is False:`));
+      container.append($('<div>').html(`Else:`));
         for (var i = 0; i < failedTasks.length; i++)
       {
         var task = failedTasks[i];
