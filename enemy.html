@@ -203,7 +203,7 @@
         },
 
         ByCompareBP: function(data, container) {
-          container.html(`Check skill points <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>`);
+          container.html(`Check skill points <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`);
         },
 
         ByRandomChance: function(data, container) {
@@ -222,9 +222,41 @@
           container.html(`Check <span class="code">${data.TargetType?.Alias}</span> has <span class="code">${data.Flag}</span> flag.`);
         },
 
+        ByCompareHPRatio: function(data, container) {
+          container.html(`Check <span class="code">${data.TargetType?.Alias}</span> HP ratio is <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`);
+        },
+
         // SELECTORS
 
+        AIModifierNameSelector: function(data, container) {
+          container.html(`Select by modifier <span class="code">${data.ModifierName}</span>.`);
+        },
 
+        AIPropertySelector: function(data, container) {
+          container.html(`Select by the <span class="code">${data.PropertyStrategy}</span> of <span class="code">${data.Property}</span>.`);
+        },
+
+        AITaskTargetTypeSelector: function(data, container) {
+          container.html(`Select by the target type of <span class="code">${data.TargetType?.Alias}</span>.`);
+        },
+
+        AIComposeSelector: function(data, container) {
+          container.append($('<div>').html(`Select by:`));
+          var selectors = data.SelectorList;
+          for (var i = 0; i < selectors.length; i++)
+          {
+            var selector = selectors[i];
+            container.append(createGamecoreView(selector));
+          }
+        },
+
+        AIMonsterIDSelector: function(data, container) {
+          container.html(`Select by monster ID in <span class="code">${data.MonsterIDList.join(', ')}</span>.`);
+        },
+
+        AIBehaviorFlagSelector: function(data, container) {
+          container.html(`Select by flag <span class="code">${data.BehaviorFlag}</span>.`);
+        },
 
         // TASKS
 
@@ -245,7 +277,8 @@
         },
 
         SelectAISkillTarget: function(data, container) {
-          container.html(`Select skill target for <span class="code">${data.SkillName}</span>.`);
+          container.append($('<div>').html(`Select target for <span class="code">${data.SkillName}</span>:`));
+          container.append(createGamecoreView(data.Selector));
         },
 
         UseSequencedSkill: function(data, container) {
@@ -311,6 +344,9 @@
           {
             var explanationContainer = $('<div>');
             gamecoreFunction(data, explanationContainer);
+            if ((data.Inverse ?? false) || (data.InverseResultFlag ?? false))
+              explanationContainer.append($('<span class="code">').text(' (Inverted)'));
+
             container.append(explanationContainer);
             hasExplanation = true;
           }
