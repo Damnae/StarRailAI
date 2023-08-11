@@ -42,7 +42,7 @@ var gamecoreFunctions =
   },
 
   ComplexSkillAIAxis: function(data, container) {
-    container.append($('<div>').html(`Complex skill AI.`));
+    container.append($('<div>').html(`Complex skill AI. <a href="index.html">View Details</a>`));
   },
 
   // PREDICATES
@@ -133,7 +133,7 @@ var gamecoreFunctions =
   },
 
   AITaskTargetTypeSelector: function(data, container) {
-    container.append($('<div>').html(`Select by the target type of <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Select in <span class="code">${data.TargetType?.Alias}</span>.`));
   },
 
   AIComposeSelector: function(data, container) {
