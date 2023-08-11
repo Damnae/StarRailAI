@@ -165,7 +165,7 @@ var gamecoreFunctions =
   },
 
   SetDynamicValue: function(data, container) {
-    container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${data.ResetValue?.FixedValue?.Value}</span>.`));
+    container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${data.Value?.FixedValue?.Value}</span>.`));
   },
 
   SetDynamicValueByAddValue: function(data, container) {
