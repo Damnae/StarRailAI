@@ -3,23 +3,92 @@
   <head>
 
     <meta charset=utf-8>
-    <title>StarRail AI - NPC AI</title>
+    <title>StarRail AI - Enemy AI</title>
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="gamecore.js"></script>
-
+    <script src="textMap.js"></script>
   </head>
   <body>
     
     <div id="content">
       <div class="half">
-        <h1>NPC AI</h1>
-        <div id="charactersContainer"></div>
+        <h1>Enemies</h1>
+        <div id="enemyContainer"></div>
+      </div>
+      <div class="half">
+        <h1>AI</h1>
+        <div id="aiContainer"></div>
       </div>
     </div>
 
     <script>
+
+      // TEMPLATE
+
+      function createEnemyView(data)
+      {
+        var container = $(`<div id="enemy_${data.MonsterTemplateID}" class="character">`);
+
+        var title = $(`<h2 class="section-opener">`).html(`${translate(data.MonsterName?.Hash)} <span class="code">(${data.MonsterTemplateID})</span>`);
+        var content = $(`<div class="section-content">`);
+
+        container.append(title);
+        container.append(content);
+        
+        var decisionsId = data.AIPath.replace('Config/ConfigAI/', '');
+        content.append($(`<a href="#${decisionsId}">`).html(`AI Decisions <span class="code">(${cleanupDecisionsName(decisionsId)})</span>`));
+        //content.append($('<pre>').text(JSON.stringify(data, null, 2)));
+
+        title.click(function() {
+          content.slideToggle();
+
+          if (!content.data('opened')) 
+          {
+            $.ajax({
+              url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + data.JsonConfig,
+              type: 'GET',
+              dataType: 'json',
+              cache: true,
+              success: function(data)
+              {
+                content.append(createEnemyDetailView(data));
+              },
+              error: function(xhr, status, error) 
+              {
+                console.error('Error:', error);
+              },
+            });
+            content.data('opened', true);
+          }
+        });
+
+        return container;
+      }
+
+      function createEnemyDetailView(data)
+      {
+        var container = $(`<div class="characterDetail">`);
+
+
+        var customValues = data.CustomValues;
+        if (customValues != undefined)
+        {
+          container.append($('<h3>').text('Variables'));
+          var variablesContainer = $('<div>');
+          for (var key in customValues) 
+            if (customValues.hasOwnProperty(key)) 
+            {
+              var customValue = customValues[key];
+              variablesContainer.append($('<div>').html(`${key} = ${customValue}`));
+            }
+          container.append(variablesContainer);
+        }
+        
+        //container.append($('<pre>').text(JSON.stringify(data, null, 2)));
+        return container;
+      }
 
       // AI
 
@@ -27,7 +96,7 @@
       {
         var container = $(`<div id="${characterFileData.path}" class="character">`);
 
-        var title = $(`<h2 class="section-opener">`).text(characterFileData.path.replace(/_/g, " ").replace('.json', ''));
+        var title = $(`<h2 class="section-opener">`).text(cleanupDecisionsName(characterFileData.path));
         var content = $(`<div class="section-content">`);
 
         container.append(title);
@@ -96,10 +165,38 @@
         return container;
       }
 
+      // CLEANUP
+
+      function cleanupDecisionsName(path)
+      {
+        return path.replace(/_/g, " ").replace('.json', '');
+      }
+
       // INITIALISATION
 
       function initialize()
       {
+        $.ajax({
+          url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/ExcelOutput/MonsterTemplateConfig.json',
+          type: 'GET',
+          dataType: 'json',
+          cache: true,
+          success: function(data)
+          {
+            var container = $('#enemyContainer');  
+            for (var key in data) 
+              if (data.hasOwnProperty(key)) 
+              {
+                var enemy = data[key];
+                container.append(createEnemyView(enemy));
+              }
+          },
+          error: function(xhr, status, error) 
+          {
+            console.error('Error:', error);
+          },
+        });
+
         $.ajax({
           url: 'https://api.github.com/repos/Dimbreath/StarRailData/git/trees/master:Config/ConfigAI',
           type: 'GET',
@@ -109,7 +206,7 @@
           {
             var tree = data.tree;
 
-            var container = $('#charactersContainer');          
+            var container = $('#aiContainer');          
             for (var i = 0; i < tree.length; i++) 
             {
               var file = tree[i];
@@ -125,7 +222,9 @@
         });
       }
 
-      $(function() { initialize(); });
+      $(function() { 
+        initializeTranslation(initialize); 
+      });
 
     </script>
   </body>
