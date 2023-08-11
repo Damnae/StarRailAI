@@ -200,7 +200,7 @@ var gamecoreFunctions =
 
 function createGamecoreView(data)
 {
-  var container = $(`<div class="explanation">`);
+  var container = $(`<div class="gamecore">`);
 
   var gamecoreName = data.$type;
   var parts = gamecoreName.split('.');
@@ -230,7 +230,7 @@ function createGamecoreView(data)
   
   if (hasExplanation)
   {
-    source.addClass('source-folded');
+    source.addClass('source-content');
     source.prev().children('div:first-child')
       .addClass('source-opener')
       .click(function() {

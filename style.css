@@ -24,20 +24,6 @@ body
     background-color: #010105;
 }
 
-.section 
-{
-}
-
-.section-content 
-{
-    display: none;
-}
-
-.section-title 
-{
-    cursor: pointer;
-}
-
 h1 
 {
     padding: .2em .5em;
@@ -82,16 +68,25 @@ h3
     width:60%;
 }
 
-.source-opener
+.section-opener
 {
     cursor: pointer;
 }
-.source-folded
+.section-content 
 {
     display: none;
 }
 
-.explanation
+.source-opener
+{
+    cursor: pointer;
+}
+.source-content
+{
+    display: none;
+}
+
+.gamecore
 {
     padding-left:1em;
 }

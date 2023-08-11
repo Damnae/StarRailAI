@@ -25,9 +25,9 @@
 
       function createAIView(characterFileData)
       {
-        var container = $(`<div id="${characterFileData.path}" class="character section">`);
+        var container = $(`<div id="${characterFileData.path}" class="character">`);
 
-        var title = $(`<h2 class="section-title">`).text(characterFileData.path.replace(/_/g, " ").replace('.json', ''));
+        var title = $(`<h2 class="section-opener">`).text(characterFileData.path.replace(/_/g, " ").replace('.json', ''));
         var content = $(`<div class="section-content">`);
 
         container.append(title);

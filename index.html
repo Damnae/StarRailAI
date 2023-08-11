@@ -125,7 +125,7 @@
 
       function createCharacterView(characterFileData)
       {
-        var container = $(`<div id="${characterFileData.path}" class="character section">`);
+        var container = $(`<div id="${characterFileData.path}" class="character">`);
 
         var title = $(`<h2 class="section-title">`).text(cleanCharacterJsonName(characterFileData.path));
         var content = $(`<div class="section-content">`);
