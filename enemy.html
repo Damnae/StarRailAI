@@ -112,6 +112,13 @@
           container.append(variablesContainer);
         }
 
+        var globalModifiers = abilityData?.GlobalModifiers;
+        if (globalModifiers != undefined)
+        {
+          container.append($('<h3>').text('Global modifiers'));
+          container.append(createModifiersView(globalModifiers));
+        }
+
         var skills = characterData.SkillList;
         container.append($('<h3>').text('Skills'));
         for (var i = 0; i < skills.length; i++)
@@ -169,44 +176,51 @@
         if (modifiers != undefined)
         {
           container.append($('<div>').html(`Modifiers:`));
-          for (var modifierName in modifiers) 
-            if (modifiers.hasOwnProperty(modifierName)) 
-            {
-              var modifier = modifiers[modifierName];
-              container.append(createExplanationView(modifier, function(modifierContainer)
-              {
-                modifierContainer.append($('<div>').html(`${modifierName}:`));
-
-                var events = modifier._CallbackList;
-                if (events != undefined)
-                {
-                  for (var eventName in events) 
-                    if (events.hasOwnProperty(eventName)) 
-                    {
-                      var event = events[eventName];
-                      modifierContainer.append(createExplanationView(event, function(eventContainer)
-                      {
-                        eventContainer.append($('<div>').html(`${eventName}:`));
-
-                        var config = event.CallbackConfig;
-                        if (config != undefined)
-                        {
-                          for (var i = 0; i < config.length; i++)
-                          {
-                            var action = config[i];
-                            eventContainer.append(createGamecoreView(action));
-                          }
-                          return true;
-                        } else return false;
-                      }));
-                    }
-                  return true;
-                } else return false;
-              }));
-            }
+          container.append(createModifiersView(modifiers));
         }
 
         //container.append($('<pre>').text(JSON.stringify(data, null, 2)));
+        return container;
+      }
+
+      function createModifiersView(data)
+      {
+        var container = $(`<div class="modifiers">`);
+        for (var modifierName in data) 
+          if (data.hasOwnProperty(modifierName)) 
+          {
+            var modifier = data[modifierName];
+            container.append(createExplanationView(modifier, function(modifierContainer)
+            {
+              modifierContainer.append($('<div>').html(`${modifierName}:`));
+
+              var events = modifier._CallbackList;
+              if (events != undefined)
+              {
+                for (var eventName in events) 
+                  if (events.hasOwnProperty(eventName)) 
+                  {
+                    var event = events[eventName];
+                    modifierContainer.append(createExplanationView(event, function(eventContainer)
+                    {
+                      eventContainer.append($('<div>').html(`${eventName}:`));
+
+                      var config = event.CallbackConfig;
+                      if (config != undefined)
+                      {
+                        for (var i = 0; i < config.length; i++)
+                        {
+                          var action = config[i];
+                          eventContainer.append(createGamecoreView(action));
+                        }
+                        return true;
+                      } else return false;
+                    }));
+                  }
+                return true;
+              } else return false;
+            }));
+          }
         return container;
       }
 
