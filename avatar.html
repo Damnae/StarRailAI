@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang=en>
+  <head>
+
+    <meta charset=utf-8>
+    <title>StarRail AI - Avatar</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="gamecore.js"></script>
+    <script src="abilities.js"></script>
+    <script src="textMap.js"></script>
+  </head>
+  <body>
+    
+    <div id="content">
+      <div class="half">
+        <h1>Avatar</h1>
+        <div id="avatarContainer"></div>
+      </div>
+    </div>
+
+    <script>
+
+      // AVATAR
+
+      function createAvatarView(data)
+      {
+        var container = $(`<div id="avatar_${data.AvatarID}" class="character">`);
+
+        var title = $(`<h2 class="section-opener">`).html(`${translate(data.AvatarName?.Hash)} <span class="code">(${data.AvatarID})</span>`);
+        var content = $(`<div class="section-content">`);
+
+        container.append(title);
+        container.append(content);
+        
+        //content.append($('<pre>').text(JSON.stringify(data, null, 2)));
+
+        var characterConfig = data.JsonPath;
+        var abilityConfig = data.JsonPath?.replace('ConfigCharacter', 'ConfigAbility').replace('_Config', '_Ability');
+
+        title.click(function() {
+          content.slideToggle();
+
+          if (!content.data('opened')) 
+          {
+            $.ajax({
+              url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + characterConfig,
+              type: 'GET',
+              dataType: 'json',
+              cache: true,
+              success: function(characterData)
+              {
+                content.append(createExplanationView(characterData, function(c)
+                {
+                  c.append($('<div>').text('Character'));
+                  return true;
+                }));
+
+                $.ajax({
+                  url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + abilityConfig,
+                  type: 'GET',
+                  dataType: 'json',
+                  cache: true,
+                  success: function(abilityData)
+                  {
+                    content.append(createCharacterDetailView(characterData, abilityData));
+                  },
+                  error: function(xhr, status, error) 
+                  {
+                    console.error('Ability Config Error:', error);
+                    content.append(createCharacterDetailView(characterData, undefined));
+                  },
+                });
+              },
+              error: function(xhr, status, error) 
+              {
+                console.error('Character Config Error:', error);
+              },
+            });
+            content.data('opened', true);
+          }
+        });
+
+        return container;
+      }
+
+      // INITIALISATION
+
+      function initialize()
+      {
+        $.ajax({
+          url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/ExcelOutput/AvatarConfig.json',
+          type: 'GET',
+          dataType: 'json',
+          cache: true,
+          success: function(data)
+          {
+            var container = $('#avatarContainer');  
+            for (var key in data) 
+              if (data.hasOwnProperty(key)) 
+              {
+                var avatar = data[key];
+                container.append(createAvatarView(avatar));
+              }
+          },
+          error: function(xhr, status, error) 
+          {
+            console.error('Character Config Error:', error);
+          },
+        });
+      }
+
+      $(function() { 
+        initializeTranslation()
+          .then(() => initializeAbilities())
+          .then(() => initialize());
+      });
+    </script>
+  </body>
+</html>
