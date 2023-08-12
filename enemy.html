@@ -41,23 +41,40 @@
         content.append($(`<a href="#${decisionsId}">`).html(`AI Decisions <span class="code">(${cleanupDecisionsName(decisionsId)})</span>`));
         //content.append($('<pre>').text(JSON.stringify(data, null, 2)));
 
+        var characterConfig = data.JsonConfig;
+        var abilityConfig = data.JsonConfig.replace('ConfigCharacter', 'ConfigAbility').replace('_Config', '_Ability');
+
         title.click(function() {
           content.slideToggle();
 
           if (!content.data('opened')) 
           {
             $.ajax({
-              url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + data.JsonConfig,
+              url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + characterConfig,
               type: 'GET',
               dataType: 'json',
               cache: true,
-              success: function(data)
+              success: function(characterData)
               {
-                content.append(createEnemyDetailView(data));
+                $.ajax({
+                  url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + abilityConfig,
+                  type: 'GET',
+                  dataType: 'json',
+                  cache: true,
+                  success: function(abilityData)
+                  {
+                    content.append(createEnemyDetailView(characterData, abilityData));
+                  },
+                  error: function(xhr, status, error) 
+                  {
+                    console.error('Ability Config Error:', error);
+                    content.append(createEnemyDetailView(characterData, undefined));
+                  },
+                });
               },
               error: function(xhr, status, error) 
               {
-                console.error('Error:', error);
+                console.error('Character Config Error:', error);
               },
             });
             content.data('opened', true);
@@ -67,12 +84,11 @@
         return container;
       }
 
-      function createEnemyDetailView(data)
+      function createEnemyDetailView(characterData, abilityData)
       {
         var container = $(`<div class="characterDetail">`);
 
-
-        var customValues = data.CustomValues;
+        var customValues = characterData.CustomValues;
         if (customValues != undefined)
         {
           container.append($('<h3>').text('Variables'));
@@ -81,11 +97,69 @@
             if (customValues.hasOwnProperty(key)) 
             {
               var customValue = customValues[key];
-              variablesContainer.append($('<div>').html(`${key} = ${customValue}`));
+              variablesContainer.append($('<div>').html(`<span class="code">${key}</span> = <span class="code">${customValue}</span>`));
             }
           container.append(variablesContainer);
         }
-        
+
+        var skills = characterData.SkillList;
+        container.append($('<h3>').text('Skills'));
+        for (var i = 0; i < skills.length; i++)
+        {
+          var skill = skills[i];
+          container.append($('<h4>').html(`${skill.Name} <span class="code">${skill.SkillType} / ${skill.UseType} / ${skill.TargetInfo?.TargetType}</span>`));
+          
+          if (abilityData != undefined)
+          {
+            var abilityNames = findSkillAbilities(skill.Name, characterData);
+            if (abilityNames != undefined)
+            {
+              for (var j = 0; j < abilityNames.length; j++)
+              {
+                var abilityName = abilityNames[j];
+                var ability = findAbility(abilityName, abilityData);
+                if (ability != undefined)
+                  container.append(createAbilityView(ability));
+              }
+            }
+            else
+            {
+              var ability = findAbility(skill.EntryAbility, abilityData);
+              if (ability != undefined)
+                container.append(createAbilityView(ability));
+            }
+          }
+        }
+
+        //container.append($('<pre>').text(JSON.stringify(characterData, null, 2)));
+        //container.append($('<pre>').text(JSON.stringify(abilityData, null, 2)));
+        return container;
+      }
+
+      function createAbilityView(data)
+      {
+        var container = $(`<div class="ability">`);
+        container.append($('<h5>').html(`<span class="code">${data.Name}</span>`));
+
+        var onStart = data.OnStart;
+        var modifiers = data.Modifiers;
+
+        if (onStart != undefined)
+        {
+          container.append($('<div>').html(`On Start:`));
+          for (var i = 0; i < onStart.length; i++)
+          {
+            var onStartAction = onStart[i];
+            container.append(createGamecoreView(onStartAction));
+          }
+        }
+
+        if (modifiers != undefined)
+        {
+          container.append($('<div>').html(`Modifiers:`));
+          // TODO
+        }
+
         //container.append($('<pre>').text(JSON.stringify(data, null, 2)));
         return container;
       }
@@ -165,7 +239,38 @@
         return container;
       }
 
-      // CLEANUP
+      // UTIL
+
+      function findSkillAbilities(name, data)
+      {
+        for (var i = 0; i < data.SkillAbilityList.length; i++)
+        {
+          var skill = data.SkillAbilityList[i];
+          if (skill.Skill == name)
+            return skill.AbilityList;
+        }
+        return undefined;
+      }
+
+      function findAbility(name, abilityData)
+      {
+        for (var i = 0; i < abilityData.AbilityList.length; i++)
+        {
+          var ability = abilityData.AbilityList[i];
+          if (ability.Name == name)
+            return ability;
+        }
+
+        for (var i = 0; i < commonAbilities.AbilityList.length; i++)
+        {
+          var ability = commonAbilities.AbilityList[i];
+          if (ability.Name == name)
+            return ability;
+        }
+        
+        console.log('Ability not found ' + name);
+        return undefined;
+      }
 
       function cleanupDecisionsName(path)
       {
@@ -174,28 +279,48 @@
 
       // INITIALISATION
 
+      var commonAbilities = {
+        AbilityList: [],
+      };
+
       function initialize()
       {
         $.ajax({
-          url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/ExcelOutput/MonsterTemplateConfig.json',
+          url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAbility/Monster/Monster_Common_Ability.json',
           type: 'GET',
           dataType: 'json',
           cache: true,
-          success: function(data)
+          success: function(commonAbilitiesData)
           {
-            var container = $('#enemyContainer');  
-            for (var key in data) 
-              if (data.hasOwnProperty(key)) 
+            commonAbilities = commonAbilitiesData;
+            $.ajax({
+              url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/ExcelOutput/MonsterTemplateConfig.json',
+              type: 'GET',
+              dataType: 'json',
+              cache: true,
+              success: function(data)
               {
-                var enemy = data[key];
-                container.append(createEnemyView(enemy));
-              }
+                var container = $('#enemyContainer');  
+                for (var key in data) 
+                  if (data.hasOwnProperty(key)) 
+                  {
+                    var enemy = data[key];
+                    container.append(createEnemyView(enemy));
+                  }
+              },
+              error: function(xhr, status, error) 
+              {
+                console.error('Monster Template Error:', error);
+              },
+            });
           },
           error: function(xhr, status, error) 
           {
-            console.error('Error:', error);
+            console.error('Monster Common Ability Error:', error);
           },
         });
+
+
 
         $.ajax({
           url: 'https://api.github.com/repos/Dimbreath/StarRailData/git/trees/master:Config/ConfigAI',
@@ -217,7 +342,7 @@
           },
           error: function(xhr, status, error) 
           {
-            console.error('Error:', error);
+            console.error('AI Config Error:', error);
           },
         });
       }

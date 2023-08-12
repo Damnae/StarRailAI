@@ -122,6 +122,10 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Check <span class="code">${data.TargetType?.Alias}</span> HP ratio is <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
   },
 
+  ByDistance: function(data, container) {
+    container.append($('<div>').html(`Check distance from <span class="code">${data.From?.Alias}</span> to <span class="code">${data.To?.Alias}</span> is <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
+  },
+
   // SELECTORS
 
   AIModifierNameSelector: function(data, container) {
@@ -222,6 +226,102 @@ var gamecoreFunctions =
       var task = tasks[i];
       container.append(createGamecoreView(task));
     }
+  },
+
+  // ABILITY ACTIONS
+
+  TriggerAbility: function(data, container) {
+    container.append($('<div>').html(`Trigger <span class="code">${data.TargetType?.Alias}</span>\'s ability <span class="code">${data.AbilityName}</span>.`));
+  },
+
+  SetTeamFormation: function(data, container) {
+    container.append($('<div>').html(`Change <span class="code">${data.Team}</span>\'s formation to <span class="code">${data.FormationType ?? data.CustomFormationName}</span>.`));
+  },
+
+  LookAt: function(data, container) {
+    container.append($('<div>').html(`Look at <span class="code">${data.TargetType}</span>.`));
+  },
+
+  AnimSetParameter: function(data, container) {
+    container.append($('<div>').html(`Set animaton parameter <span class="code">${data.ParameterName}</span> to <span class="code">${data.Value}</span>.`));
+  },
+
+  TriggerAnimState: function(data, container) {
+    container.append($('<div>').html(`Play <span class="code">${data.TargetType?.Alias}</span>\'s animation <span class="code">${data.AnimStateName}</span> / <span class="code">${data.AnimLogicState}</span>.`));
+  },
+
+  TriggerEffect: function(data, container) {
+    container.append($('<div>').html(`Play visual effect at <span class="code">${data.TargetType?.Alias}</span>.`));
+  },
+
+  ShowBossInfoBar: function(data, container) {
+    container.append($('<div>').html(`Set show boss info bar for <span class="code">${data.TargetType?.Alias}</span> to <span class="code">${data.IsShow}</span>.`));
+  },
+
+  ShowBattleUI: function(data, container) {
+    container.append($('<div>').html(`Set show battle UI to <span class="code">${data.IsShow}</span>.`));
+  },
+
+  AddModifier: function(data, container) {
+    container.append($('<div>').html(`Apply modifier <span class="code">${data.ModifierName}</span> to <span class="code">${data.TargetType?.Alias}</span>.`));
+    // TODO handle DynamicValues ShowUIMessageDelayTime
+  },
+
+  RemoveModifier: function(data, container) {
+    container.append($('<div>').html(`Remove modifier <span class="code">${data.ModifierName}</span> from <span class="code">${data.TargetType?.Alias}</span>.`));
+  },
+
+  StartAim: function(data, container) {
+    container.append($('<div>').html(`Aim at <span class="code">${data.TargetType?.Alias}</span> over <span class="code">${data.TransitTime}</span> seconds.`));
+  },
+  StopAim: function(data, container) {
+    container.append($('<div>').html(`Stop aiming.`));
+  },
+
+  MoveToTargetPosition: function(data, container) {
+    container.append($('<div>').html(`Move to <span class="code">${data.TargetType?.Alias}</span> with offset <span class="code">${data.OffsetTargetDistance?.FixedValue?.Value}</span>.`));
+  },  
+  MoveToTargetList: function(data, container) {
+    container.append($('<div>').html(`Move <span class="code">${data.TargetType?.Alias}</span> with animation <span class="code">${data.AnimStateName}</span>.`));
+  },  
+  TriggerAnimStateWithMove: function(data, container) {
+    container.append($('<div>').html(`Move <span class="code">${data.TargetType?.Alias}</span> with animation <span class="code">${data.AnimStateName}</span>.`));
+  },
+
+  WaitSecond: function(data, container) {
+    container.append($('<div>').html(`Wait <span class="code">${data.WaitTime}</span> seconds.`));
+  },  
+  WaitAnimState: function(data, container) {
+    container.append($('<div>').html(`Wait for <span class="code">${data.TargetType?.Alias}</span>\'s <span class="code">${data.AnimStateName}</span> animation to reach <span class="code">${(data.NormalizedTimeEnd?.FixedValue?.Value ?? 1) * 100}</span>%.`));
+  },
+
+  Retarget: function(data, container) {
+    container.append($('<div>').html(`Targetting <span class="code">${data.MaxNumber?.FixedValue?.Value}</span> of <span class="code">${data.TargetType?.Alias}</span>,`));
+    container.append($('<div>').html(`With Condition:`));
+    container.append(createGamecoreView(data.Predicate));
+    container.append($('<div>').html(`Do:`));
+    var tasks = data.TaskList;
+    for (var i = 0; i < tasks.length; i++)
+    {
+      var task = tasks[i];
+      container.append(createGamecoreView(task));
+    }
+  },
+
+  CharacterChangePhase: function(data, container) {
+    container.append($('<div>').html(`Change <span class="code">${data.TargetType?.Alias}</span>\'s phase to <span class="code">${data.PhaseName}</span>.`));
+  },
+  SkillExecutionStart: function(data, container) {
+    container.append($('<div>').html(`Begin skill execution.`));
+  },
+  SkillPerformFinish: function(data, container) {
+    container.append($('<div>').html(`End skill execution.`));
+  },
+  DamagePerformFinish: function(data, container) {
+    container.append($('<div>').html(`Finalize damage.`));
+  },
+  SetDieImmediately: function(data, container) {
+    container.append($('<div>').html(`Die immediately.`));
   },
 };
 
