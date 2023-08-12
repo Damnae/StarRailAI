@@ -126,6 +126,13 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Check distance from <span class="code">${data.From?.Alias}</span> to <span class="code">${data.To?.Alias}</span> is <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
   },
 
+  BySkillPointActivated: function(data, container) {
+    container.append($('<div>').html(`Check trace <span class="code">${data.PointTriggerKey?.Hash}</span> unlocked.`));
+  },  
+  ByRankActivated: function(data, container) {
+    container.append($('<div>').html(`Check eidolon <span class="code">${data.TriggerKey?.Hash}</span> unlocked.`));
+  },
+
   // SELECTORS
 
   AIModifierNameSelector: function(data, container) {
@@ -235,7 +242,7 @@ var gamecoreFunctions =
   // ABILITY ACTIONS (Major)
 
   TriggerAbility: function(data, container) {
-    container.append($('<div>').html(`Trigger <span class="code">${data.TargetType?.Alias}</span>\'s ability <span class="code">${data.AbilityName}</span>.`));
+    container.append($('<div>').html(`Trigger <span class="code">${data.TargetType?.Alias}</span>\'s ability <span class="code">${data.AbilityName}</span> with target <span class="code">${data.AbilityInherentTargetType?.Alias}</span>.`));
   },
 
   DamageByAttackProperty: function(data, container) {
@@ -290,6 +297,10 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Change action delay for <span class="code">${data.TargetType?.Alias}</span>.`));
   },
 
+  ModifyTeamBoostPoint: function(data, container) {
+    container.append($('<div>').html(`<span class="code">${data.ModifyFunction}</span> <span class="code">${data.ModifyValue?.FixedValue?.Value}</span> skill point.`));
+  },
+
   ShowEntityFloatMessage: function(data, container) {
     container.append($('<div>').html(`Show message above <span class="code">${data.TargetType?.Alias}</span>: "<span class="code">${translate(data.ContentID?.Hash)}</span>".`));
   },
@@ -308,8 +319,18 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Add a stack of <span class="code">${data.Property}</span> to <span class="code">${data.TargetType?.Alias}</span>.`));
     // TODO handle PropertyValue DynamicValues
   },
+  TriggerModifierCustomEvent: function(data, container) {
+    container.append($('<div>').html(`Trigger <span class="code">${data.TargetType?.Alias}</span>\'s modifier <span class="code">${data.EventType} ${data.DynamicKey}</span>.`));
+  },
   DispelStatus: function(data, container) {
-    container.append($('<div>').html(`Dispel <span class="code">${data.TargetType?.Alias}</span>\'s <span class="code">${data.Order ?? 'All'}</span> status.`));
+    container.append($('<div>').html(`Dispel <span class="code">${data.TargetType?.Alias}</span>\'s <span class="code">${data.Order ?? 'All'} ${data.BuffType ?? 'Debuff'}</span>.`));
+  },
+
+  InitShield: function(data, container) {
+    container.append($('<div>').html(`Apply shield to <span class="code">${data.TargetType?.Alias}</span> with formula <span class="code">${data.FormulaType}</span>.`));
+  },
+  RemoveShield: function(data, container) {
+    container.append($('<div>').html(`Remove shield from <span class="code">${data.TargetType?.Alias}</span>.`));
   },
 
   TurnInsertAbility: function(data, container) {
@@ -335,6 +356,10 @@ var gamecoreFunctions =
     }
   },
 
+  MakeSuccess: function(data, container) {
+    container.append($('<div>').html(`Make success(?):`));
+    container.append(createGamecoreView(data.Task));
+  },
   LoopTargetList: function(data, container) {
     container.append($('<div>').html(`For all targets:`));
     var tasks = data.TaskList;
@@ -355,6 +380,17 @@ var gamecoreFunctions =
   },
   LoopExecuteTaskListWithInterval: function(data, container) {
     container.append($('<div>').html(`Repeat <span class="code">${data.MaxLoopCount?.FixedValue?.Value}</span> times:`));
+    var tasks = data.TaskList;
+    for (var i = 0; i < tasks.length; i++)
+    {
+      var task = tasks[i];
+      container.append(createGamecoreView(task));
+    }
+  },
+  ConditionLoopExecuteTaskList: function(data, container) {
+    container.append($('<div>').html(`Repeat while:`));
+    container.append(createGamecoreView(data.Predicate));
+    container.append($('<div>').html(`Do:`));
     var tasks = data.TaskList;
     for (var i = 0; i < tasks.length; i++)
     {
@@ -484,7 +520,10 @@ var gamecoreFunctions =
     container.append($('<div class="minor">').html(`Show skill text: "<span class="code">${translate(data.SkillName?.Hash)}</span>".`));
   },
   StackStatusDesc: function(data, container) {
-    container.append($('<div class="minor">').html(`Stack status text: "<span class="code">${translate(data.TextID?.Hash)}</span>".`));
+    container.append($('<div class="minor">').html(`Change status text: "<span class="code">${translate(data.TextID?.Hash)}</span>".`));
+  },
+  StackSkillDesc: function(data, container) {
+    container.append($('<div class="minor">').html(`Change <span class="code">${data.SkillName}</span>\'s text: "<span class="code">${translate(data.OverrideSimpleDescTextID?.Hash)}</span>".`));
   },
 
   HideLevelStage: function(data, container) {
