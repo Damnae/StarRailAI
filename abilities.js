@@ -181,10 +181,10 @@ function findAbility(name, abilityData)
   return undefined;
 }
 
-function initializeAbilities()
+function initializeAbilities(commonPath)
 {
   return $.ajax({
-    url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAbility/Monster/Monster_Common_Ability.json',
+    url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + commonPath,
     type: 'GET',
     dataType: 'json',
     cache: true,
@@ -194,7 +194,7 @@ function initializeAbilities()
     },
     error: function(xhr, status, error) 
     {
-      console.error('Monster Common Ability Error:', error);
+      console.error('Common Ability Error:', error);
     },
   }).then(function() 
   {

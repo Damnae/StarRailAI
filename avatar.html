@@ -34,7 +34,11 @@
         container.append(title);
         container.append(content);
         
-        //content.append($('<pre>').text(JSON.stringify(data, null, 2)));
+        content.append(createExplanationView(data, function(c)
+        {
+          c.append($('<div>').text('Config'));
+          return true;
+        }));
 
         var characterConfig = data.JsonPath;
         var abilityConfig = data.JsonPath?.replace('ConfigCharacter', 'ConfigAbility').replace('_Config', '_Ability');
@@ -113,7 +117,7 @@
 
       $(function() { 
         initializeTranslation()
-          .then(() => initializeAbilities())
+          .then(() => initializeAbilities('Config/ConfigAbility/Avatar/Avatar_Common_Ability.json'))
           .then(() => initialize());
       });
     </script>
