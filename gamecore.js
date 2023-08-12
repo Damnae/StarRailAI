@@ -271,6 +271,10 @@ var gamecoreFunctions =
       container.append($('<div class="minor">').html(`Wait for the projectile to hit.`));
   },
 
+  HealHP: function(data, container) {
+    container.append($('<div>').html(`Heal <span class="code">${data.TargetType?.Alias}</span> by <span class="code">${(data.HealPercentage?.FixedValue?.Value ?? 0) * 100}</span>% using formula <span class="code">${data.FormulaType}</span>.`));
+  },
+
   SetActionDelay: function(data, container) {
     container.append($('<div>').html(`Set action delay for <span class="code">${data.TargetType?.Alias}</span> to <span class="code">${data.Value?.FixedValue?.Value}</span>.`));
   },
@@ -296,6 +300,10 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Add a stack of <span class="code">${data.Property}</span> to <span class="code">${data.TargetType?.Alias}</span>.`));
     // TODO handle PropertyValue DynamicValues
   },
+  DispelStatus: function(data, container) {
+    container.append($('<div>').html(`Dispel <span class="code">${data.TargetType?.Alias}</span>\'s status.`));
+    // TODO handle PropertyValue DynamicValues
+  },
 
   TurnInsertAbility: function(data, container) {
     container.append($('<div>').html(`Insert ability <span class="code">${data.TargetType?.Alias}</span>\'s <span class="code">${data.AbilityName}</span> ability, targetting <span class="code">${data.AbilityTarget?.Alias}</span> with priority <span class="code">${data.InsertAbilityPriority}</span>.`));
@@ -308,12 +316,15 @@ var gamecoreFunctions =
       container.append($('<div>').html(`With Condition:`));
       container.append(createGamecoreView(data.Predicate));
     }
-    container.append($('<div>').html(`Do:`));
     var tasks = data.TaskList;
-    for (var i = 0; i < tasks.length; i++)
+    if (tasks != undefined)
     {
-      var task = tasks[i];
-      container.append(createGamecoreView(task));
+      container.append($('<div>').html(`Do:`));
+      for (var i = 0; i < tasks.length; i++)
+      {
+        var task = tasks[i];
+        container.append(createGamecoreView(task));
+      }
     }
   },
 
@@ -329,7 +340,15 @@ var gamecoreFunctions =
 
   CharacterChangePhase: function(data, container) {
     container.append($('<div>').html(`Change <span class="code">${data.TargetType?.Alias}</span>\'s phase to <span class="code">${data.PhaseName}</span>.`));
+  },  
+  SetMonsterPhase: function(data, container) {
+    container.append($('<div>').html(`Change <span class="code">${data.TargetType?.Alias}</span>\'s phase to <span class="code">${data.PhaseNum}</span>.`));
   },
+
+  ConstructBodyPart: function(data, container) {
+    container.append($('<div>').html(`Create body part <span class="code">${data.PartName}</span>.`));
+  },
+
   ExitBreakState: function(data, container) {
     container.append($('<div>').html(`Clear <span class="code">${data.TargetType?.Alias}</span>\'s break state.`));
   },
@@ -344,7 +363,7 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Finalize damage.`));
   },
   SetDieImmediately: function(data, container) {
-    container.append($('<div>').html(`Die immediately.`));
+    container.append($('<div>').html(`Have <span class="code">${data.TargetType?.Alias}</span> die immediately.`));
   },
   ForceKill: function(data, container) {
     container.append($('<div>').html(`Kill <span class="code">${data.TargetType?.Alias}</span>.`));

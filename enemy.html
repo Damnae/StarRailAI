@@ -130,6 +130,7 @@
                 var ability = findAbility(abilityName, abilityData);
                 if (ability != undefined)
                   container.append(createAbilityView(ability));
+                else container.append($('<h5>').html(`<span class="code">${abilityName}</span> (missing)`));
               }
             }
             else
@@ -137,6 +138,7 @@
               var ability = findAbility(skill.EntryAbility, abilityData);
               if (ability != undefined)
                 container.append(createAbilityView(ability));
+              else container.append($('<h5>').html(`<span class="code">${skill.EntryAbility}</span> (missing)`));
             }
           }
         }
@@ -311,8 +313,17 @@
           if (ability.Name == name)
             return ability;
         }
+
+        for (var i = 0; i < commonAdditionalAbilities.AbilityList.length; i++)
+        {
+          var ability = commonAdditionalAbilities.AbilityList[i];
+          if (ability.Name == name)
+            return ability;
+        }
         
-        console.log('Ability not found ' + name);
+        if (name != undefined && !name.includes('Camera'))
+          console.log('Ability not found ' + name);
+
         return undefined;
       }
 
@@ -327,6 +338,10 @@
         AbilityList: [],
       };
 
+      var commonAdditionalAbilities = {
+        AbilityList: [],
+      };
+
       function initialize()
       {
         $.ajax({
@@ -334,37 +349,54 @@
           type: 'GET',
           dataType: 'json',
           cache: true,
-          success: function(commonAbilitiesData)
+          success: function(data)
           {
-            commonAbilities = commonAbilitiesData;
-            $.ajax({
-              url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/ExcelOutput/MonsterTemplateConfig.json',
-              type: 'GET',
-              dataType: 'json',
-              cache: true,
-              success: function(data)
-              {
-                var container = $('#enemyContainer');  
-                for (var key in data) 
-                  if (data.hasOwnProperty(key)) 
-                  {
-                    var enemy = data[key];
-                    container.append(createEnemyView(enemy));
-                  }
-              },
-              error: function(xhr, status, error) 
-              {
-                console.error('Monster Template Error:', error);
-              },
-            });
+            commonAbilities = data;
           },
           error: function(xhr, status, error) 
           {
             console.error('Monster Common Ability Error:', error);
           },
+        }).then(function() 
+        {
+          if (false)
+          $.ajax({
+            url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAbility/Common_Additional_Ability.json',
+            type: 'GET',
+            dataType: 'json',
+            cache: true,
+            success: function(data)
+            {
+              commonAdditionalAbilities = data;
+            },
+            error: function(xhr, status, error) 
+            {
+              console.error('Common Additional Ability Error:', error);
+            },
+          });
+        }).then(function() 
+        {
+          $.ajax({
+            url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/ExcelOutput/MonsterTemplateConfig.json',
+            type: 'GET',
+            dataType: 'json',
+            cache: true,
+            success: function(data)
+            {
+              var container = $('#enemyContainer');  
+              for (var key in data) 
+                if (data.hasOwnProperty(key)) 
+                {
+                  var enemy = data[key];
+                  container.append(createEnemyView(enemy));
+                }
+            },
+            error: function(xhr, status, error) 
+            {
+              console.error('Monster Template Error:', error);
+            },
+          });
         });
-
-
 
         $.ajax({
           url: 'https://api.github.com/repos/Dimbreath/StarRailData/git/trees/master:Config/ConfigAI',
