@@ -309,7 +309,7 @@ var gamecoreFunctions =
     // TODO handle PropertyValue DynamicValues
   },
   DispelStatus: function(data, container) {
-    container.append($('<div>').html(`Dispel <span class="code">${data.TargetType?.Alias}</span>\'s status.`));
+    container.append($('<div>').html(`Dispel <span class="code">${data.TargetType?.Alias}</span>\'s <span class="code">${data.Order ?? 'All'}</span> status.`));
   },
 
   TurnInsertAbility: function(data, container) {
