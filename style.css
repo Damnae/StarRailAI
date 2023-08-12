@@ -110,6 +110,10 @@ h5
 {
     opacity:.3;
 }
+.missing
+{
+    color: hsla(43, 89%, 38%, 0.5);
+}
 
 a[href^="#"] 
 {

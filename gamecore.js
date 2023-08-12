@@ -274,6 +274,9 @@ var gamecoreFunctions =
   SetActionDelay: function(data, container) {
     container.append($('<div>').html(`Set action delay for <span class="code">${data.TargetType?.Alias}</span> to <span class="code">${data.Value?.FixedValue?.Value}</span>.`));
   },
+  ModifyActionDelay: function(data, container) {
+    container.append($('<div>').html(`Change action delay for <span class="code">${data.TargetType?.Alias}</span>.`));
+  },
 
   ShowEntityFloatMessage: function(data, container) {
     container.append($('<div>').html(`Show message above <span class="code">${data.TargetType?.Alias}</span>: "<span class="code">${translate(data.ContentID?.Hash)}</span>".`));
@@ -343,6 +346,9 @@ var gamecoreFunctions =
   SetDieImmediately: function(data, container) {
     container.append($('<div>').html(`Die immediately.`));
   },
+  ForceKill: function(data, container) {
+    container.append($('<div>').html(`Kill <span class="code">${data.TargetType?.Alias}</span>.`));
+  },
   EscapeFromBattle: function(data, container) {
     container.append($('<div>').html(`Escape from battle.`));
   },
@@ -371,6 +377,10 @@ var gamecoreFunctions =
 
   TriggerEffect: function(data, container) {
     container.append($('<div class="minor">').html(`Play visual effect at <span class="code">${data.TargetType?.Alias}</span>.`));
+  },
+
+  TriggerEffectList: function(data, container) {
+    container.append($('<div class="minor">').html(`Play multiple visual effects at <span class="code">${data.TargetType?.Alias}</span>.`));
   },
 
   RemoveEffect: function(data, container) {
@@ -479,8 +489,8 @@ function createGamecoreView(data)
   
     if (parts.length === 3) 
     {
-      var functionName = parts[2];
-      var gamecoreFunction = gamecoreFunctions[functionName];
+      gamecoreName = parts[2];
+      var gamecoreFunction = gamecoreFunctions[gamecoreName];
       
       if (gamecoreFunction != undefined) 
       {
@@ -492,9 +502,11 @@ function createGamecoreView(data)
       }
       else console.log(`Not found: ${gamecoreName}`);
     }
-    else console.log(`Not found: ${gamecoreName}`);
+    else console.log(`Invalid format: ${gamecoreName}`);
 
-    return false;
+    var cleanName = gamecoreName.split(/([A-Z][a-z]+)/).filter(e => e).join(' ');
+    container.append($('<div class="missing">').html(`${cleanName}.`));
+    return true;
   });
 }
 
