@@ -107,6 +107,15 @@ h5
 {
     padding-left:1em;
 }
+.modifier
+{
+    margin-top:1em;
+}
+.event
+{
+    margin-top:.5em;
+    color:cornflowerblue;
+}
 .code
 {
     color: #aaaaaa;

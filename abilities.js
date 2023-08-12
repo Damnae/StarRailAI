@@ -97,7 +97,7 @@ function createModifiersView(data)
       var modifier = data[modifierName];
       container.append(createExplanationView(modifier, function(modifierContainer)
       {
-        modifierContainer.append($('<div>').html(`Modifier <span class="code">${modifierName}</span>:`));
+        modifierContainer.append($('<div class="modifier">').html(`Modifier <span class="code">${modifierName}</span>:`));
 
         var onDynamicValueChanges = modifier.OnDynamicValueChange;
         // TODO parse onDynamicValueChanges
@@ -111,7 +111,7 @@ function createModifiersView(data)
               var event = events[eventName];
               modifierContainer.append(createExplanationView(event, function(eventContainer)
               {
-                eventContainer.append($('<div>').html(`${eventName}:`));
+                eventContainer.append($('<div class="event">').html(`${eventName}:`));
 
                 var config = event.CallbackConfig;
                 if (config != undefined)
