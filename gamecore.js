@@ -344,13 +344,33 @@ var gamecoreFunctions =
       container.append(createGamecoreView(task));
     }
   },
-
   LoopExecuteTaskList: function(data, container) {
     container.append($('<div>').html(`Repeat <span class="code">${data.MaxLoopCount?.FixedValue?.Value}</span> times:`));
     var tasks = data.TaskList;
     for (var i = 0; i < tasks.length; i++)
     {
       var task = tasks[i];
+      container.append(createGamecoreView(task));
+    }
+  },
+  LoopExecuteTaskListWithInterval: function(data, container) {
+    container.append($('<div>').html(`Repeat <span class="code">${data.MaxLoopCount?.FixedValue?.Value}</span> times:`));
+    var tasks = data.TaskList;
+    for (var i = 0; i < tasks.length; i++)
+    {
+      var task = tasks[i];
+      container.append(createGamecoreView(task));
+    }
+  },
+  RandomConfig: function(data, container) {
+    container.append($('<div>').html(`Randomly do,`));
+    var tasks = data.TaskList;
+    var odds = data.OddsList;
+    for (var i = 0; i < tasks.length; i++)
+    {
+      var task = tasks[i];
+      var odd = odds[i];
+      container.append($('<div>').html(`<span class="code">${(odd.FixedValue?.Value ?? 0) * 100}</span>%:`));
       container.append(createGamecoreView(task));
     }
   },
