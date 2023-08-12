@@ -73,7 +73,7 @@ var gamecoreFunctions =
   },
 
   ByCompareDynamicValue: function(data, container) {
-    container.append($('<div>').html(`Check <span class="code">${data.ContextScope}</span>'\s <span class="code">${data.DynamicKey} ${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
+    container.append($('<div>').html(`Check <span class="code">${data.TargetType?.Alias}</span>'\s <span class="code">${data.DynamicKey} ${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
   },
 
   ByIsContainModifier: function(data, container) {
@@ -176,6 +176,10 @@ var gamecoreFunctions =
 
   SetDynamicValueByAddValue: function(data, container) {
     container.append($('<div>').html(`Add <span class="code">${data.AddValue?.FixedValue?.Value}</span> to <span class="code">${data.TargetType?.Alias}</span>'\s <span class="code">${data.Key}</span> and clamp between <span class="code">${data.Min?.FixedValue?.Value}</span> and <span class="code">${data.Max?.FixedValue?.Value}</span>.`));
+  },
+
+  SetDynamicValueByProperty: function(data, container) {
+    container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${data.ReadTargetType?.Alias}</span>'\s <span class="code">${data.Value}</span>.`));
   },
 
   SelectAISkillTarget: function(data, container) {
@@ -357,6 +361,9 @@ var gamecoreFunctions =
   SetMonsterPhase: function(data, container) {
     container.append($('<div>').html(`Change <span class="code">${data.TargetType?.Alias}</span>\'s phase to <span class="code">${data.PhaseNum}</span>.`));
   },
+  LockHP: function(data, container) {
+    container.append($('<div>').html(`Lock HP to <span class="code">${(data.Threshold?.FixedValue?.Value) * 100}</span>%.`));
+  },  
 
   ConstructBodyPart: function(data, container) {
     container.append($('<div>').html(`Create body part <span class="code">${data.PartName}</span>.`));
@@ -456,6 +463,9 @@ var gamecoreFunctions =
   ShowSkillTextDialog: function(data, container) {
     container.append($('<div class="minor">').html(`Show skill text: "<span class="code">${translate(data.SkillName?.Hash)}</span>".`));
   },
+  StackStatusDesc: function(data, container) {
+    container.append($('<div class="minor">').html(`Stack status text: "<span class="code">${translate(data.TextID?.Hash)}</span>".`));
+  },
 
   HideLevelStage: function(data, container) {
     container.append($('<div class="minor">').html(`Change stage visibility to <span class="code">${!(data.IsHide ?? false)}</span>.`));
@@ -547,12 +557,8 @@ function createExplanationView(data, callback)
   var container = $(`<div class="explanation">`);
   var explanationContainer = $('<div>');
 
-  var hasExplanation = false;
-  if (callback(explanationContainer))
-  {
-    container.append(explanationContainer);
-    hasExplanation = true;
-  }
+  var hasExplanation = callback(explanationContainer);
+  container.append(explanationContainer);
 
   var source = $('<pre>');
   container.append(source.text(JSON.stringify(data, null, 2)));
