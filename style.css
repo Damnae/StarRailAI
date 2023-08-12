@@ -91,13 +91,17 @@ h4, h5
     display: none;
 }
 
-.gamecore
+.explanation
 {
     padding-left:1em;
 }
 .code
 {
     color: #aaaaaa;
+}
+.minor
+{
+    opacity:.3;
 }
 
 a[href^="#"] 

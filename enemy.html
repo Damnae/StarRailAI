@@ -39,7 +39,11 @@
         
         var decisionsId = data.AIPath.replace('Config/ConfigAI/', '');
         content.append($(`<a href="#${decisionsId}">`).html(`AI Decisions <span class="code">(${cleanupDecisionsName(decisionsId)})</span>`));
-        //content.append($('<pre>').text(JSON.stringify(data, null, 2)));
+        content.append(createExplanationView(data, function(c)
+        {
+          c.append($('<div>').text('Template'));
+          return true;
+        }));
 
         var characterConfig = data.JsonConfig;
         var abilityConfig = data.JsonConfig.replace('ConfigCharacter', 'ConfigAbility').replace('_Config', '_Ability');
@@ -56,6 +60,12 @@
               cache: true,
               success: function(characterData)
               {
+                content.append(createExplanationView(characterData, function(c)
+                {
+                  c.append($('<div>').text('Character'));
+                  return true;
+                }));
+
                 $.ajax({
                   url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + abilityConfig,
                   type: 'GET',
@@ -157,7 +167,41 @@
         if (modifiers != undefined)
         {
           container.append($('<div>').html(`Modifiers:`));
-          // TODO
+          for (var modifierName in modifiers) 
+            if (modifiers.hasOwnProperty(modifierName)) 
+            {
+              var modifier = modifiers[modifierName];
+              container.append(createExplanationView(modifier, function(modifierContainer)
+              {
+                modifierContainer.append($('<div>').html(`${modifierName}:`));
+
+                var events = modifier._CallbackList;
+                if (events != undefined)
+                {
+                  for (var eventName in events) 
+                    if (events.hasOwnProperty(eventName)) 
+                    {
+                      var event = events[eventName];
+                      modifierContainer.append(createExplanationView(event, function(eventContainer)
+                      {
+                        eventContainer.append($('<div>').html(`${eventName}:`));
+
+                        var config = event.CallbackConfig;
+                        if (config != undefined)
+                        {
+                          for (var i = 0; i < config.length; i++)
+                          {
+                            var action = config[i];
+                            eventContainer.append(createGamecoreView(action));
+                          }
+                          return true;
+                        } else return false;
+                      }));
+                    }
+                  return true;
+                } else return false;
+              }));
+            }
         }
 
         //container.append($('<pre>').text(JSON.stringify(data, null, 2)));
