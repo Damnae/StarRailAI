@@ -7,6 +7,11 @@ body
     margin: 1vh;
 }
 
+a 
+{
+    color:#ffffff;
+}
+
 #content 
 {
     display: flex;

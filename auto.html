@@ -1,0 +1,328 @@
+<!doctype html>
+<html lang=en>
+  <head>
+
+    <meta charset=utf-8>
+    <title>StarRail AI - Auto</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+
+  </head>
+  <body>
+    
+    <div id="content">
+      <div class="half">
+        <h1>Characters</h1>
+        <div id="charactersContainer"></div>
+      </div>
+      <div class="half">
+        <h1>Weight Groups</h1>
+        <div id="weightGroupsContainer"></div>
+      </div>
+    </div>
+
+    <script>
+
+      // WEIGHT GROUPS
+
+      function createGroupView(groupName, groupData)
+      {
+        var factors = groupData.Factors;
+        
+        var container = $(`<div id="group_${groupName}" class="group">`);
+        container.append($('<h2>').text(groupName));
+        container.append($('<p>').text(explainGroup(groupName)));
+        if (factors != undefined)
+          for (var i = 0; i < factors.length; i++) 
+          {
+            var factor = factors[i];
+            container.append(createFactorView(factor));
+          }
+
+        //container.append($('<pre>').text(JSON.stringify(groupData, null, 2)));
+        return container;
+      }
+
+      function createFactorView(factorData)
+      {
+        var container = $(`<div class="factor">`);
+
+        var combineOperator = factorData.CombineOperator;
+        var source = factorData.Source;
+        var mapper = factorData.Mapper;
+        var postProcess = factorData.PostProcess;
+
+        container.append($('<h3>').text("Source"));
+        if (combineOperator != undefined)
+          container.append($('<p>').text("combineOperator: " + combineOperator));
+        container.append($('<pre>').text(JSON.stringify(source, null, 2)));
+        if (postProcess != undefined)
+        {
+          container.append($('<h3>').text("PostProcess"));
+          container.append($('<pre>').text(JSON.stringify(postProcess, null, 2)));
+        }
+
+        var ranges = mapper.Ranges;
+        ranges.sort((a, b) => (a.xmin?.Value ?? 0) - (b.xmin?.Value ?? 0));
+
+        var chartContainer = $('<div>');
+        container.append($('<h3>').text("Mapper"));
+        container.append(chartContainer);
+
+        var chartData = [];
+        for (var i = 0; i < ranges.length; i++) 
+        {
+          var range = ranges[i];
+          var xmin = range.xmin?.Value ?? 0;
+          var xmax = range.xmax?.Value ?? 0;
+          var ymin = range.ymin?.Value ?? 0;
+          var ymax = range.ymax?.Value ?? 0;
+
+          chartData.push({x: xmin, y: ymin, });
+          chartData.push({x: xmax, y: ymax, });
+        }
+
+        const width = 640;
+        const height = 400;
+        const marginTop = 20;
+        const marginRight = 20;
+        const marginBottom = 30;
+        const marginLeft = 40;
+
+        const xScale = d3.scaleLinear(d3.extent(chartData, d => d.x), [marginLeft, width - marginRight]);
+        const yScale = d3.scaleLinear(d3.extent(chartData, d => d.y), [height - marginBottom, marginTop]);
+        const line = d3.line().x(d => xScale(d.x)).y(d => yScale(d.y));
+
+        const svg = d3.create("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+        // x-axis.
+        svg.append("g")
+            .attr("transform", `translate(0,${height - marginBottom})`)
+            .call(d3.axisBottom(xScale));
+
+        // y-axis.
+        svg.append("g")
+            .attr("transform", `translate(${marginLeft},0)`)
+            .call(d3.axisLeft(yScale));
+
+        svg.append("path")
+          .attr("fill", "none")
+          .attr("stroke", "steelblue")
+          .attr("stroke-width", 3)
+          .attr("d", line(chartData));
+
+        chartContainer.get(0).append(svg.node());
+
+        //container.append($('<pre>').text(JSON.stringify(ranges, null, 2)));
+
+        return container;
+      }
+
+      // CHARACTERS
+
+      function createCharacterView(characterFileData)
+      {
+        var container = $(`<div id="${characterFileData.path}" class="character">`);
+
+        var title = $(`<h2 class="section-title">`).text(cleanCharacterJsonName(characterFileData.path));
+        var content = $(`<div class="section-content">`);
+
+        container.append(title);
+        container.append(content);
+
+        title.click(function() {
+          content.slideToggle();
+
+          if (!content.data('opened')) 
+          {
+            $.ajax({
+              url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigCharacter/Avatar/' + characterFileData.path,
+              type: 'GET',
+              dataType: 'json',
+              cache: true,
+              success: function(data)
+              {
+                content.append(createCharacterDetailView(data));
+              },
+              error: function(xhr, status, error) 
+              {
+                console.error('Error:', error);
+              },
+            });
+            content.data('opened', true);
+          }
+        });
+
+        return container;
+      }
+
+      function createCharacterDetailView(data)
+      {
+        var container = $(`<div class="characterDetail">`);
+        
+        var skillList = data.SkillList;
+        for (var i = 0; i < skillList.length; i++) 
+        {
+          var skill = skillList[i];
+
+          if (skill.ComplexSkillAI != undefined)
+            container.append(createSkillView(skill));
+        }
+        
+        //container.append($('<pre>').text(JSON.stringify(data, null, 2)));
+        return container;
+      }
+
+      function createSkillView(skillData)
+      {
+        var container = $(`<div class="characterSkill">`);
+        
+        var name = skillData.Name;
+        var type = skillData.SkillType ?? "BasicATK";
+        var ai = skillData.ComplexSkillAI;
+
+        container.append($('<h3>').text(`${type} (${name})`));
+
+        if (ai != undefined)
+        {
+          var power = ai.SkillBasicPower?.Value;
+          var groups = ai.Groups;
+          groups.sort((a, b) => (b.Weight?.Value ?? 1) - (a.Weight?.Value ?? 1));
+
+          var table = $('<table>');
+          table.append($('<tr><th>Weight</th><th>Group</th><th>Summary</th></tr>'));
+          for (var i = 0; i < groups.length; i++) 
+          {
+            var group = groups[i];
+            var groupName = group.GroupName;
+            var groupWeight = parseFloat((group.Weight?.Value ?? 1).toFixed(4));
+            var info = explainGroup(groupName);
+
+            var row = $(`<tr><td>${groupWeight}</td><td><a href="#group_${groupName}">${groupName}</a></td><td>${info}</td></tr>`);
+            table.append(row);
+          }
+          container.append(table);
+
+          if (power != undefined)
+            container.append($('<p>').text(`Power: ${parseFloat(power.toFixed(4))}`));
+        }
+
+        //container.append($('<pre>').text(JSON.stringify(skillData, null, 2)));
+        return container;
+      }
+
+      // CLEANUP
+
+      // BaseType order: Unknown, Destruction, Hunt, Erudition, Harmony, Nihility, Preservation, Abundance (AvatarBaseType.json)
+
+      const groupSummaries = 
+      {
+        BaseWeight: 'A plain weight with no condition.',        
+        Base_Common_BaseTypeFactor: 'A weight based on path, where Destruction = Hunt = Erudition > Nihility > Preservation = Abundance = 0',
+        Add01_Common_CompareEnemyDPT: 'Increases as the target DPT (damage potential?) increases.',
+        Add01_Common_EnemysNumber: 'Increases as the number of enemy alive increases (up to 5).',
+        Add01_Common_BuffDOT: 'Increases to extreme values with the number of DOT effects on the target.',
+        Add01_Common_CompareTeamSP: 'Increased as the target\'s(?) energy increases, 0 if energy is maxed.',
+        Add01_Common_TauntBuffShieldTaunt: 'Increased if the target is marked to be attacked by enemies.',
+        Add10_Common_BuffBurn: 'Increases if the target is NOT burning.',
+        Add10_Common_BuffFrozen: 'Increases if the target is NOT frozen.',
+        AddNP_Common_BPSkill: 'Increases as team skill points increase. Extremely negative at 0 skill points.',
+        AddpP_Common_SelfNeighbour: 'Increases abruptly when the target has 2 neighbors.',
+        BasePp_Common_SingleAttack: 'Increases as the target hp% decreases. Increases for weaker but not the weakest targets. Prevents use if the target is low priority.',
+        BasePp_Common_WeakBreak: 'Increases if the target is broken or weak to element. Prevents use if the target is low priority.',
+        Ultra_Common_SingleAttack: 'Increases as the target\'s hp% nears 50%. Prevents use if the target is low priority.',
+        Ultra_Common_ImmediateRelease: 'Maxed when Energy is maxed, used on ultimates to cause them to be used immediately',
+
+        Base_Bronya_CompareDPT: 'Increases as the target DPT (damage potential?) increases. Starts slow but very steep around 85%. Multiplied by path-specific weights, which are higher for damage oriented paths.',
+        Base_Tingyun_CompareDPT: 'Linearly increases as the target DPT (damage potential?) increases. Multiplied by path-specific weights, which are higher for damage oriented paths',
+        Base_Natasha_SingleHeal: 'Increases as the target hp% decreases. Reaches 0 at 80% hp',
+        Base_Mar7th_SingleShield: 'Increases as the target hp% decreases. Decreased on targets that already have March\'s shield.',
+        Add01_Pela_CompareEnemyED: 'Increases as the target ED(Enhanced Damage?) increases.',
+        Add01_Yukong_FlowerCheck: 'Increases if Yukong\'s buff isn\'t active. Prevents use if it is.',
+        Add10_Pela_BuffPelaBPSkill: 'Increases if the target does not have Pela\s DEF debuff.',
+        Add10_Seele_BuffSelfSpeedUp: 'Increases if Seele does not have her speed buff (2nd stack not taken into account).',
+        Add_QingQue_MajiangBuffLayer: 'Increases as QQ gets more tiles of the same kind.',
+        Add_Arlan_HpEffect: 'Increases as hp% increases. 0 under 15% hp; maxed at 50% hp.',
+        Add_Luka_ChargePoint: 'Increases to extreme values with the number of Bleed DOT effects on the target.',
+        Add_Player01_WeaponChargePoint: 'Increases to extreme values as Preservation Trailblazer\'s Magma Will stacks increase, or if they have a free use from their Ultimate.',
+        AddNP_Sushang_BPSkill_Break: 'Increases if the target is broken.',
+        AddPp_Ren_BpSkillHPPercent: 'Increases as hp% increases. Negative under 30% hp.',
+        Add01_Silwolf_DebuffNumber: 'Increases as the number of debuffs on the target increases (up to 5).',
+        Add01_Broyan_CompareActionDelay: 'Increases as the team member\'s action delay increases. Prevents use if the team member is ready.',
+        Add01_JingYuan_BpSkillEnemysNumber: 'Increases as the number of enemy alive increases (up to 5). Also increases with the target\'s strength.',
+        Ultra_Natasha_TeamHPCheck: 'Increases as the lowest team member\'s hp% decreases. Prevents use at or above 50% hp.',
+      };
+
+      function cleanCharacterJsonName(filename)
+      {
+        var name = filename.substring("Avatar_".length).replace("_Config.json", "").replace("_00", "");
+        name = name.replace("_00", "").replace(/_/g, " ");
+        name = name.replace(/^Ren$/, "Blade").replace("Klara", "Clara").replace("Mar 7th", "March 7th").replace("Silwolf", "SilverWolf");
+        return name;
+      }
+
+      function explainGroup(groupName)
+      {
+        if (groupSummaries.hasOwnProperty(groupName))
+          return groupSummaries[groupName];
+        return '';
+      }
+
+      // INITIALISATION
+
+      function initialize()
+      {
+        $.ajax({
+          url: 'https://api.github.com/repos/Dimbreath/StarRailData/git/trees/master:Config/ConfigCharacter/Avatar',
+          type: 'GET',
+          dataType: 'json',
+          cache: true,
+          success: function(data)
+          {
+            var tree = data.tree;
+
+            var container = $('#charactersContainer');          
+            for (var i = 0; i < tree.length; i++) 
+            {
+              var characterFile = tree[i];
+              container.append(createCharacterView(characterFile));
+            }
+          },
+          error: function(xhr, status, error) 
+          {
+            console.error('Character List Error:', error);
+          },
+        });
+
+        $.ajax({
+          url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAI/ComplexSkillAIGlobalGroup/Global_FactorGroups.json',
+          type: 'GET',
+          dataType: 'json',
+          cache: true,
+          success: function(data) 
+          {
+            var groupsMap = data.GroupsMap;
+        
+            var container = $('#weightGroupsContainer');
+            for (var key in groupsMap) 
+              if (groupsMap.hasOwnProperty(key)) 
+              {
+                var group = groupsMap[key];
+                container.append(createGroupView(key, group));
+              }
+          },
+          error: function(xhr, status, error) 
+          {
+            console.error('AI Weight Groups Error:', error);
+          },
+        });
+      }
+
+      $(function() { initialize(); });
+
+    </script>
+  </body>
+</html>
