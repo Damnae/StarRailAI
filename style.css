@@ -42,8 +42,15 @@ h3
     padding: .1em .25em;
 }
 
-h4, h5
+h4
 {
+    background-color:rgb(41, 9, 9);
+    margin: .5em 0;
+}
+
+h5
+{
+    background-color:rgb(26, 9, 9);
     margin: .5em 0;
 }
 

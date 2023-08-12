@@ -283,13 +283,15 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Apply modifier <span class="code">${data.ModifierName}</span> to <span class="code">${data.TargetType?.Alias}</span>.`));
     // TODO handle DynamicValues ShowUIMessageDelayTime
   },
-
   RemoveModifier: function(data, container) {
     container.append($('<div>').html(`Remove modifier <span class="code">${data.ModifierName}</span> from <span class="code">${data.TargetType?.Alias}</span>.`));
   },
-
   RemoveSelfModifier: function(data, container) {
     container.append($('<div>').html(`Remove this modifier.`));
+  },
+  StackProperty: function(data, container) {
+    container.append($('<div>').html(`Add a stack of <span class="code">${data.Property}</span> to <span class="code">${data.TargetType?.Alias}</span>.`));
+    // TODO handle PropertyValue DynamicValues
   },
 
   TurnInsertAbility: function(data, container) {
@@ -312,8 +314,21 @@ var gamecoreFunctions =
     }
   },
 
+  LoopExecuteTaskList: function(data, container) {
+    container.append($('<div>').html(`Repeat <span class="code">${data.MaxLoopCount?.FixedValue?.Value}</span> times:`));
+    var tasks = data.TaskList;
+    for (var i = 0; i < tasks.length; i++)
+    {
+      var task = tasks[i];
+      container.append(createGamecoreView(task));
+    }
+  },
+
   CharacterChangePhase: function(data, container) {
     container.append($('<div>').html(`Change <span class="code">${data.TargetType?.Alias}</span>\'s phase to <span class="code">${data.PhaseName}</span>.`));
+  },
+  ExitBreakState: function(data, container) {
+    container.append($('<div>').html(`Clear <span class="code">${data.TargetType?.Alias}</span>\'s break state.`));
   },
 
   SkillExecutionStart: function(data, container) {
@@ -330,6 +345,10 @@ var gamecoreFunctions =
   },
   EscapeFromBattle: function(data, container) {
     container.append($('<div>').html(`Escape from battle.`));
+  },
+
+  SetBattleAchievement: function(data, container) {
+    container.append($('<div>').html(`Give achievement <span class="code">${data.AchievementID}</span>.`));
   },
 
   // ABILITY ACTIONS (Minor)
@@ -366,8 +385,16 @@ var gamecoreFunctions =
     container.append($('<div class="minor">').html(`Apply radial blur effect.`));
   },
 
+  RadialBlurCurveEffect: function(data, container) {
+    container.append($('<div class="minor">').html(`Apply radial blur effect.`));
+  },
+
   ScaleCharacterModel: function(data, container) {
     container.append($('<div class="minor">').html(`Change the scale of <span class="code">${data.TargetType?.Alias}</span> to <span class="code">${data.ModelScaleBase}</span>.`));
+  },
+
+  TriggerSound: function(data, container) {
+    container.append($('<div class="minor">').html(`Play sound "<span class="code">${data.SoundName}</span>".`));
   },
 
   ShowBossInfoBar: function(data, container) {
@@ -377,12 +404,25 @@ var gamecoreFunctions =
   ShowBattleUI: function(data, container) {
     container.append($('<div class="minor">').html(`Set show battle UI to <span class="code">${data.IsShow}</span>.`));
   },
+  // not sure what the IsShow parameter is really named
+  //MakeCharacterHUDVisible: function(data, container) {
+  //  container.append($('<div class="minor">').html(`Set show character HUD for <span class="code">${data.TargetType?.Alias}</span> to <span class="code">${data.IsShow}</span>.`));
+  //},
   ShowUIPage: function(data, container) {
     container.append($('<div class="minor">').html(`Show help page.`));
   },
+  ShowSkillTextDialog: function(data, container) {
+    container.append($('<div class="minor">').html(`Show skill text: "<span class="code">${translate(data.SkillName?.Hash)}</span>".`));
+  },
 
+  HideLevelStage: function(data, container) {
+    container.append($('<div class="minor">').html(`Change stage visibility to <span class="code">${!(data.IsHide ?? false)}</span>.`));
+  },
   SetEntityVisible: function(data, container) {
     container.append($('<div class="minor">').html(`Change <span class="code">${data.TargetType?.Alias}</span> visibility to <span class="code">${data.Visible ?? false}</span>.`));
+  },
+  SetAttachmentVisibility: function(data, container) {
+    container.append($('<div class="minor">').html(`Change <span class="code">${data.TargetType?.Alias}</span>\'s <span class="code">${data.AttachPoints.map(i => i.Name).join(', ')}</span> visibility to <span class="code">${data.Visibility ?? false}</span>.`));
   },
 
   StartAim: function(data, container) {
@@ -403,6 +443,19 @@ var gamecoreFunctions =
   },  
   TriggerAnimStateWithMove: function(data, container) {
     container.append($('<div class="minor">').html(`Move <span class="code">${data.TargetType?.Alias}</span> with animation <span class="code">${data.AnimStateName}</span>.`));
+    var eventList = data.EventList;
+    if (eventList != undefined)
+      for (var i = 0; i < eventList.length; i++)
+      {
+        var event = eventList[i];
+        container.append($('<div>').html(`At <span class="code">${(event.NormalizedTime?.FixedValue?.Value) * 100}</span>%:`));
+        var tasks = event.TaskList;
+        for (var j = 0; j < tasks.length; j++)
+        {
+          var task = tasks[j];
+          container.append(createGamecoreView(task));
+        }
+      }
   },
   
   VCameraConfigChange: function(data, container) {
