@@ -305,6 +305,21 @@
 
       // UTIL
 
+      function cleanupDecisionsName(path)
+      {
+        return path.replace(/_/g, " ").replace('.json', '');
+      }
+
+      // INITIALISATION
+
+      var commonAbilities = {
+        AbilityList: [],
+      };
+
+      var commonAdditionalAbilities = {
+        AbilityList: [],
+      };
+
       function findSkillAbilities(name, data)
       {
         for (var i = 0; i < data.SkillAbilityList.length; i++)
@@ -345,24 +360,9 @@
         return undefined;
       }
 
-      function cleanupDecisionsName(path)
+      function initializeAbilities()
       {
-        return path.replace(/_/g, " ").replace('.json', '');
-      }
-
-      // INITIALISATION
-
-      var commonAbilities = {
-        AbilityList: [],
-      };
-
-      var commonAdditionalAbilities = {
-        AbilityList: [],
-      };
-
-      function initialize()
-      {
-        $.ajax({
+        return $.ajax({
           url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAbility/Monster/Monster_Common_Ability.json',
           type: 'GET',
           dataType: 'json',
@@ -392,28 +392,30 @@
               console.error('Common Additional Ability Error:', error);
             },
           });
-        }).then(function() 
-        {
-          $.ajax({
-            url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/ExcelOutput/MonsterTemplateConfig.json',
-            type: 'GET',
-            dataType: 'json',
-            cache: true,
-            success: function(data)
-            {
-              var container = $('#enemyContainer');  
-              for (var key in data) 
-                if (data.hasOwnProperty(key)) 
-                {
-                  var enemy = data[key];
-                  container.append(createEnemyView(enemy));
-                }
-            },
-            error: function(xhr, status, error) 
-            {
-              console.error('Monster Template Error:', error);
-            },
-          });
+        });
+      }
+
+      function initialize()
+      {
+        $.ajax({
+          url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/ExcelOutput/MonsterTemplateConfig.json',
+          type: 'GET',
+          dataType: 'json',
+          cache: true,
+          success: function(data)
+          {
+            var container = $('#enemyContainer');  
+            for (var key in data) 
+              if (data.hasOwnProperty(key)) 
+              {
+                var enemy = data[key];
+                container.append(createEnemyView(enemy));
+              }
+          },
+          error: function(xhr, status, error) 
+          {
+            console.error('Monster Template Error:', error);
+          },
         });
 
         $.ajax({
@@ -442,9 +444,10 @@
       }
 
       $(function() { 
-        initializeTranslation(initialize); 
+        initializeTranslation()
+          .then(() => initializeAbilities())
+          .then(() => initialize());
       });
-
     </script>
   </body>
 </html>

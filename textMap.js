@@ -6,12 +6,12 @@ function translate(hash)
     return textMap[hash];
 }
 
-function initializeTranslation(then)
+function initializeTranslation()
 {
     if (getHash('MDF_DamagePercentage') != 1486739431)
         console.error('getHash is fucked =)');
 
-    $.ajax({
+    return $.ajax({
         url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/TextMap/TextMapEN.json',
         type: 'GET',
         dataType: 'json',
@@ -19,7 +19,6 @@ function initializeTranslation(then)
         success: function(data)
         {
             textMap = data;
-            then();
         },
         error: function(xhr, status, error) 
         {
