@@ -123,7 +123,7 @@
 
       // CHARACTERS
 
-      function createCharacterView(characterFileData)
+      function createCharacterAIView(characterFileData)
       {
         var container = $(`<div id="${characterFileData.path}" class="character">`);
 
@@ -145,7 +145,7 @@
               cache: true,
               success: function(data)
               {
-                content.append(createCharacterDetailView(data));
+                content.append(createCharacterAIDetailView(data));
               },
               error: function(xhr, status, error) 
               {
@@ -159,7 +159,7 @@
         return container;
       }
 
-      function createCharacterDetailView(data)
+      function createCharacterAIDetailView(data)
       {
         var container = $(`<div class="characterDetail">`);
         
@@ -169,14 +169,14 @@
           var skill = skillList[i];
 
           if (skill.ComplexSkillAI != undefined)
-            container.append(createSkillView(skill));
+            container.append(createSkillAIView(skill));
         }
         
         //container.append($('<pre>').text(JSON.stringify(data, null, 2)));
         return container;
       }
 
-      function createSkillView(skillData)
+      function createSkillAIView(skillData)
       {
         var container = $(`<div class="characterSkill">`);
         
@@ -288,7 +288,7 @@
             for (var i = 0; i < tree.length; i++) 
             {
               var characterFile = tree[i];
-              container.append(createCharacterView(characterFile));
+              container.append(createCharacterAIView(characterFile));
             }
           },
           error: function(xhr, status, error) 
