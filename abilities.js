@@ -5,6 +5,7 @@ function createCharacterDetailView(configData, characterData, abilityData)
 
   var configSkills = configData?.SkillList;
   var customValues = characterData.CustomValues;
+  var characterSkills = characterData.SkillList;
   var globalModifiers = abilityData?.GlobalModifiers;
 
   if (customValues != undefined)
@@ -40,7 +41,6 @@ function createCharacterDetailView(configData, characterData, abilityData)
     }
   }
 
-  var characterSkills = characterData.SkillList;
   container.append($('<h3>').text('Character Skills'));
   for (var i = 0; i < characterSkills.length; i++)
   {
@@ -70,12 +70,12 @@ function createCharacterDetailView(configData, characterData, abilityData)
         else container.append($('<h5>').html(`<span class="code">${skill.EntryAbility}</span> (missing)`));
       }
     }
-
-    if (globalModifiers != undefined)
-    {
-      container.append($('<h3>').text('Global modifiers'));
-      container.append(createModifiersView(globalModifiers));
-    }
+  }
+  
+  if (globalModifiers != undefined)
+  {
+    container.append($('<h3>').text('Global modifiers'));
+    container.append(createModifiersView(globalModifiers));
   }
 
   //container.append($('<pre>').text(JSON.stringify(characterData, null, 2)));
