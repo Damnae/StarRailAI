@@ -74,12 +74,12 @@
                   cache: true,
                   success: function(abilityData)
                   {
-                    content.append(createCharacterDetailView(characterData, abilityData));
+                    content.append(createCharacterDetailView(undefined, characterData, abilityData));
                   },
                   error: function(xhr, status, error) 
                   {
                     console.error('Ability Config Error:', error);
-                    content.append(createCharacterDetailView(characterData, undefined));
+                    content.append(createCharacterDetailView(undefined, characterData, undefined));
                   },
                 });
               },
@@ -229,7 +229,7 @@
 
       $(function() { 
         initializeTranslation()
-          .then(() => initializeAbilities('Config/ConfigAbility/Monster/Monster_Common_Ability.json'))
+          .then(() => initializeAbilities('Monster'))
           .then(() => initialize());
       });
     </script>

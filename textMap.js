@@ -19,6 +19,7 @@ function initializeTranslation()
         success: function(data)
         {
             textMap = data;
+            console.log('translation loaded');
         },
         error: function(xhr, status, error) 
         {

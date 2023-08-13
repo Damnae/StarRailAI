@@ -1,9 +1,12 @@
 
-function createCharacterDetailView(characterData, abilityData)
+function createCharacterDetailView(configData, characterData, abilityData)
 {
   var container = $(`<div class="characterDetail">`);
 
+  var configSkills = configData?.SkillList;
   var customValues = characterData.CustomValues;
+  var globalModifiers = abilityData?.GlobalModifiers;
+
   if (customValues != undefined)
   {
     container.append($('<h3>').text('Variables'));
@@ -17,20 +20,34 @@ function createCharacterDetailView(characterData, abilityData)
     container.append(variablesContainer);
   }
 
-  var globalModifiers = abilityData?.GlobalModifiers;
-  if (globalModifiers != undefined)
+  if (configSkills != undefined)
   {
-    container.append($('<h3>').text('Global modifiers'));
-    container.append(createModifiersView(globalModifiers));
+    container.append($('<h3>').text('Config Skills'));
+    for (var i = 0; i < configSkills.length; i++)
+    {
+      var skillId = configSkills[i];
+      var skillConfig = getSkillConfig(skillId);
+
+      if (skillConfig != undefined)
+        container.append(createExplanationView(skillConfig, function(c)
+        {
+          c.append($('<div>').html(`<h4>${translate(skillConfig.SkillTag.Hash)} ${translate(skillConfig.SkillTypeDesc.Hash)} <span class="code">(${skillConfig.SkillTriggerKey})</span></h4>`));
+          var description = translate(skillConfig.SimpleSkillDesc.Hash)?.replace('\\n', ' ');
+          if (description != undefined)
+            c.append($('<p class="minor">').html(description));
+          return true;
+        }));
+    }
   }
 
-  var skills = characterData.SkillList;
-  container.append($('<h3>').text('Skills'));
-  for (var i = 0; i < skills.length; i++)
+  var characterSkills = characterData.SkillList;
+  container.append($('<h3>').text('Character Skills'));
+  for (var i = 0; i < characterSkills.length; i++)
   {
-    var skill = skills[i];
-    container.append($('<h4>').html(`${skill.Name} <span class="code">${skill.SkillType} / ${skill.UseType} / ${skill.TargetInfo?.TargetType}</span>`));
-    
+    var skill = characterSkills[i];
+
+    container.append($('<h4>').html(`${skill.Name} <span class="code">${skill.SkillType} / ${skill.UseType} / ${skill.TargetInfo?.TargetType} (${skillId})</span>`));
+
     if (abilityData != undefined)
     {
       var abilityNames = findSkillAbilities(skill.Name, characterData);
@@ -52,6 +69,12 @@ function createCharacterDetailView(characterData, abilityData)
           container.append(createAbilityView(ability));
         else container.append($('<h5>').html(`<span class="code">${skill.EntryAbility}</span> (missing)`));
       }
+    }
+
+    if (globalModifiers != undefined)
+    {
+      container.append($('<h3>').text('Global modifiers'));
+      container.append(createModifiersView(globalModifiers));
     }
   }
 
@@ -181,37 +204,59 @@ function findAbility(name, abilityData)
   return undefined;
 }
 
-function initializeAbilities(commonPath)
+var skillConfigs = {
+};
+
+function getSkillConfig(id)
 {
-  return $.ajax({
-    url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + commonPath,
-    type: 'GET',
-    dataType: 'json',
-    cache: true,
-    success: function(data)
-    {
-      commonAbilities = data;
-    },
-    error: function(xhr, status, error) 
-    {
-      console.error('Common Ability Error:', error);
-    },
-  }).then(function() 
-  {
-    if (false)
+  var allRanks = skillConfigs[id];
+  if (allRanks == undefined)
+    return undefined;
+
+  var rank = (Object.keys(allRanks).length * 2) / 3;
+  return allRanks[rank];
+}
+
+function initializeAbilities(type)
+{
+  // also this https://github.com/Dimbreath/StarRailData/blob/master/Config/ConfigGlobalModifier/GlobalModifier_Common_Specific.json ?
+  // https://github.com/Dimbreath/StarRailData/blob/master/ExcelOutput/StatusConfig.json has readparamlist
+
+  // doesn't seem needed atm
+  // https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAbility/Common_Additional_Ability.json
+
+  var commonAbilityPath = `Config/ConfigAbility/${type}/${type}_Common_Ability.json`;
+  var skillConfigPath = `ExcelOutput/${type}SkillConfig.json`;
+
+  return $.when(
     $.ajax({
-      url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAbility/Common_Additional_Ability.json',
+      url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + commonAbilityPath,
       type: 'GET',
       dataType: 'json',
       cache: true,
       success: function(data)
       {
-        commonAdditionalAbilities = data;
+        commonAbilities = data;
+        console.log(type + ' common abilities loaded');
       },
       error: function(xhr, status, error) 
       {
-        console.error('Common Additional Ability Error:', error);
+        console.error('Common Ability Error:', error);
       },
-    });
-  });
+    }),
+    $.ajax({
+      url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/' + skillConfigPath,
+      type: 'GET',
+      dataType: 'json',
+      cache: true,
+      success: function(data)
+      {
+        skillConfigs = data;
+        console.log(type + ' skill config loaded');
+      },
+      error: function(xhr, status, error) 
+      {
+        console.error('Skill Configs Error:', error);
+      },
+    }));
 }

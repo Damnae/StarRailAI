@@ -68,12 +68,12 @@
                   cache: true,
                   success: function(abilityData)
                   {
-                    content.append(createCharacterDetailView(characterData, abilityData));
+                    content.append(createCharacterDetailView(data, characterData, abilityData));
                   },
                   error: function(xhr, status, error) 
                   {
                     console.error('Ability Config Error:', error);
-                    content.append(createCharacterDetailView(characterData, undefined));
+                    content.append(createCharacterDetailView(data, characterData, undefined));
                   },
                 });
               },
@@ -117,7 +117,7 @@
 
       $(function() { 
         initializeTranslation()
-          .then(() => initializeAbilities('Config/ConfigAbility/Avatar/Avatar_Common_Ability.json'))
+          .then(() => initializeAbilities('Avatar'))
           .then(() => initialize());
       });
     </script>
