@@ -627,7 +627,8 @@ function createExplanationView(data, callback)
     source.addClass('source-content');
     source.prev().children('div:first-child')
       .addClass('source-opener')
-      .click(function() {
+      .click(function(event) {
+        event.stopPropagation();
         source.slideToggle();
       });
   }

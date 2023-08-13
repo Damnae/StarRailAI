@@ -43,7 +43,8 @@
         var characterConfig = data.JsonPath;
         var abilityConfig = data.JsonPath?.replace('ConfigCharacter', 'ConfigAbility').replace('_Config', '_Ability');
 
-        title.click(function() {
+        title.click(function(event) {
+          event.stopPropagation();
           content.slideToggle();
 
           if (!content.data('opened')) 

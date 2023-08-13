@@ -133,7 +133,8 @@
         container.append(title);
         container.append(content);
 
-        title.click(function() {
+        title.click(function(event) {
+          event.stopPropagation();
           content.slideToggle();
 
           if (!content.data('opened')) 

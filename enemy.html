@@ -49,7 +49,8 @@
         var characterConfig = data.JsonConfig;
         var abilityConfig = data.JsonConfig.replace('ConfigCharacter', 'ConfigAbility').replace('_Config', '_Ability');
 
-        title.click(function() {
+        title.click(function(event) {
+          event.stopPropagation();
           content.slideToggle();
 
           if (!content.data('opened')) 
@@ -107,7 +108,8 @@
         container.append(title);
         container.append(content);
 
-        title.click(function() {
+        title.click(function(event) {
+          event.stopPropagation();
           content.slideToggle();
 
           if (!content.data('opened')) 
