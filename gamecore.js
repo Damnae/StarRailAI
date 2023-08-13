@@ -121,6 +121,9 @@ var gamecoreFunctions =
   ByCompareHPRatio: function(data, container) {
     container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> HP ratio is <span class="code">${data.CompareType} ${formulaView(data.CompareValue)}</span>.`));
   },
+  ByCompareHP: function(data, container) {
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> HP is <span class="code">${data.CompareType} ${formulaView(data.CompareValue)}</span>.`));
+  },
 
   ByDistance: function(data, container) {
     container.append($('<div>').html(`Check distance from <span class="code">${toTargetName(data.From)}</span> to <span class="code">${toTargetName(data.To)}</span> is <span class="code">${data.CompareType} ${formulaView(data.CompareValue)}</span>.`));
@@ -131,6 +134,10 @@ var gamecoreFunctions =
   },  
   ByRankActivated: function(data, container) {
     container.append($('<div>').html(`Check eidolon <span class="code">${data.TriggerKey?.Hash}</span> unlocked.`));
+  },
+
+  ByCompareTarget: function(data, container) {
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> is <span class="code">${toTargetName(data.CompareType)}</span>.`));
   },
 
   // SELECTORS
@@ -184,9 +191,11 @@ var gamecoreFunctions =
   SetDynamicValueByAddValue: function(data, container) {
     container.append($('<div>').html(`Add <span class="code">${formulaView(data.AddValue)}</span> to <span class="code">${toTargetName(data.TargetType)}</span>'\s <span class="code">${data.Key}</span> and clamp between <span class="code">${formulaView(data.Min)}</span> and <span class="code">${formulaView(data.Max)}</span>.`));
   },
-
   SetDynamicValueByProperty: function(data, container) {
     container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${toTargetName(data.ReadTargetType)}</span>'\s <span class="code">${data.Value}</span>.`));
+  },
+  SetDynamicValueByModifierValue: function(data, container) {
+    container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${data.ModifierName}</span>\'s <span class="code">${data.ValueType}</span>.`));
   },
 
   SelectAISkillTarget: function(data, container) {
@@ -246,7 +255,7 @@ var gamecoreFunctions =
   },
 
   DamageByAttackProperty: function(data, container) {
-    container.append($('<div>').html(`Deal <span class="code">${formulaView(data.AttackProperty?.DamagePercentage) * 100}</span>% ATK <span class="code">${data.AttackProperty?.DamageType ?? 'Physical'}</span> damage to <span class="code">${toTargetName(data.TargetType)}</span>.`));
+    container.append($('<div>').html(`Deal <span class="code">${formulaView(data.AttackProperty?.DamagePercentage)}</span>% ATK <span class="code">${data.AttackProperty?.DamageType ?? 'Physical'}</span> damage to <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
   FireProjectile: function(data, container) {
@@ -283,7 +292,10 @@ var gamecoreFunctions =
   },
 
   HealHP: function(data, container) {
-    container.append($('<div>').html(`Heal <span class="code">${toTargetName(data.TargetType)}</span> by <span class="code">${(formulaView(data.HealPercentage)) * 100}</span>% using formula <span class="code">${data.FormulaType}</span>.`));
+    container.append($('<div>').html(`Heal <span class="code">${toTargetName(data.TargetType)}</span> by <span class="code">${(formulaView(data.HealPercentage))}</span>% using formula <span class="code">${data.FormulaType}</span>.`));
+  },
+  SetHP: function(data, container) {
+    container.append($('<div>').html(`Set <span class="code">${toTargetName(data.TargetType)}</span>\'s HP to <span class="code">${data.ModifyValue}</span>.`));
   },
   LoseHPByRatio: function(data, container) {
     container.append($('<div>').html(`Have <span class="code">${toTargetName(data.TargetType)}</span> lose <span class="code">${data.RatioType}</span>.`));
@@ -323,6 +335,9 @@ var gamecoreFunctions =
   },
   TriggerModifierCustomEvent: function(data, container) {
     container.append($('<div>').html(`Trigger <span class="code">${toTargetName(data.TargetType)}</span>\'s modifier <span class="code">${data.EventType} ${data.DynamicKey}</span>.`));
+  },  
+  SetModifierValue: function(data, container) {
+    container.append($('<div>').html(`Change <span class="code">${toTargetName(data.TargetType)}</span>\'s modifier <span class="code">${data.ModifierName}</span> value,  <span class="code">${data.ModifyFunction ?? 'Set'} ${formulaView(data.Value)}</span>.`));
   },
   DispelStatus: function(data, container) {
     container.append($('<div>').html(`Dispel <span class="code">${toTargetName(data.TargetType)}</span>\'s <span class="code">${data.Order ?? 'All'} ${data.BuffType ?? 'Debuff'}</span>.`));
@@ -408,7 +423,7 @@ var gamecoreFunctions =
     {
       var task = tasks[i];
       var odd = odds[i];
-      container.append($('<div>').html(`<span class="code">${formulaView(odd) * 100}</span>%:`));
+      container.append($('<div>').html(`<span class="code">${formulaView(odd)}</span>%:`));
       container.append(createGamecoreView(task));
     }
   },
@@ -420,7 +435,7 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Change <span class="code">${toTargetName(data.TargetType)}</span>\'s phase to <span class="code">${data.PhaseNum}</span>.`));
   },
   LockHP: function(data, container) {
-    container.append($('<div>').html(`Lock HP to <span class="code">${(formulaView(data.Threshold)) * 100}</span>%.`));
+    container.append($('<div>').html(`Lock HP to <span class="code">${(formulaView(data.Threshold))}</span>%.`));
   },  
 
   ConstructBodyPart: function(data, container) {
@@ -530,6 +545,9 @@ var gamecoreFunctions =
   },
   StackSkillDesc: function(data, container) {
     container.append($('<div class="minor">').html(`Change <span class="code">${data.SkillName}</span>\'s text: "<span class="code">${translate(data.OverrideSimpleDescTextID?.Hash)}</span>".`));
+  },
+  SetEnergyBarState: function(data, container) {
+    container.append($('<div class="minor">').html(`Change character bar to <span class="code">${formulaView(data.CurrentCount)}</span> / <span class="code">${formulaView(data.MaxCount)}</span> with <span class="code">${formulaView(data.CD)}</span> cooldown.`));
   },
 
   HideLevelStage: function(data, container) {
