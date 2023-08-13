@@ -73,11 +73,11 @@ var gamecoreFunctions =
   },
 
   ByCompareDynamicValue: function(data, container) {
-    container.append($('<div>').html(`Check <span class="code">${data.TargetType?.Alias}</span>'\s <span class="code">${data.DynamicKey} ${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span>'\s <span class="code">${data.DynamicKey} ${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
   },
 
   ByIsContainModifier: function(data, container) {
-    container.append($('<div>').html(`Check <span class="code">${data.TargetType?.Alias}</span> has modifier <span class="code">${data.ModifierName}</span>`));
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> has modifier <span class="code">${data.ModifierName}</span>`));
   },
 
   ByCompareMonsterPhase: function(data, container) {
@@ -85,7 +85,7 @@ var gamecoreFunctions =
   },
 
   ByCompareCharacterNumber: function(data, container) {
-    container.append($('<div>').html(`Check character count in <span class="code">${data.TargetType.Alias}</span> is <span class="code">${data.CompareType} ${data.CompareNumber?.FixedValue?.Value}</span>`));
+    container.append($('<div>').html(`Check character count in <span class="code">${toTargetName(data.TargetType)}</span> is <span class="code">${data.CompareType} ${data.CompareNumber?.FixedValue?.Value}</span>`));
     var predicate = data.Predicate;
     if (predicate != undefined)
     {
@@ -95,7 +95,7 @@ var gamecoreFunctions =
   },
 
   ByCompareAliveEnemyNumber: function(data, container) {
-    container.append($('<div>').html(`Check <span class="code">${data.TargetType?.Alias}</span>'\s alive enemy number is <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>`));
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span>'\s alive enemy number is <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>`));
   },
 
   ByCompareBP: function(data, container) {
@@ -111,19 +111,19 @@ var gamecoreFunctions =
   },
 
   ByCompareMonsterID: function(data, container) {
-    container.append($('<div>').html(`Check <span class="code">${data.TargetType?.Alias}</span>'\s monster ID is <span class="code">${data.TargetMonsterID?.FixedValue?.Value}</span>`));
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span>'\s monster ID is <span class="code">${data.TargetMonsterID?.FixedValue?.Value}</span>`));
   },
 
   ByContainBehaviorFlag: function(data, container) {
-    container.append($('<div>').html(`Check <span class="code">${data.TargetType?.Alias}</span> has <span class="code">${data.Flag}</span> flag.`));
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> has <span class="code">${data.Flag}</span> flag.`));
   },
 
   ByCompareHPRatio: function(data, container) {
-    container.append($('<div>').html(`Check <span class="code">${data.TargetType?.Alias}</span> HP ratio is <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> HP ratio is <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
   },
 
   ByDistance: function(data, container) {
-    container.append($('<div>').html(`Check distance from <span class="code">${data.From?.Alias}</span> to <span class="code">${data.To?.Alias}</span> is <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
+    container.append($('<div>').html(`Check distance from <span class="code">${toTargetName(data.From)}</span> to <span class="code">${toTargetName(data.To)}</span> is <span class="code">${data.CompareType} ${data.CompareValue?.FixedValue?.Value}</span>.`));
   },
 
   BySkillPointActivated: function(data, container) {
@@ -136,8 +136,8 @@ var gamecoreFunctions =
   // SELECTORS
 
   AIModifierNameSelector: function(data, container) {
-    if (data.ModifierCaster?.Alias != undefined)
-        container.append($('<div>').html(`Select by <span class="code">${data.ModifierCaster?.Alias}</span>\'s modifier <span class="code">${data.ModifierName}</span>.`));
+    if (data.ModifierCaster != undefined)
+        container.append($('<div>').html(`Select by <span class="code">${toTargetName(data.ModifierCaster)}</span>\'s modifier <span class="code">${data.ModifierName}</span>.`));
       else container.append($('<div>').html(`Select by modifier <span class="code">${data.ModifierName}</span>.`));
   },
 
@@ -146,7 +146,7 @@ var gamecoreFunctions =
   },
 
   AITaskTargetTypeSelector: function(data, container) {
-    container.append($('<div>').html(`Select in <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Select in <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
   AIComposeSelector: function(data, container) {
@@ -174,7 +174,7 @@ var gamecoreFunctions =
   },
 
   DefineDynamicValue: function(data, container) {
-    container.append($('<div>').html(`Define <span class="code">${data.TargetType?.Alias}</span>'\s <span class="code">${data.DynamicKey}</span> to <span class="code">${data.ResetValue?.FixedValue?.Value}</span>.`));
+    container.append($('<div>').html(`Define <span class="code">${toTargetName(data.TargetType)}</span>'\s <span class="code">${data.DynamicKey}</span> to <span class="code">${data.ResetValue?.FixedValue?.Value}</span>.`));
   },
 
   SetDynamicValue: function(data, container) {
@@ -182,11 +182,11 @@ var gamecoreFunctions =
   },
 
   SetDynamicValueByAddValue: function(data, container) {
-    container.append($('<div>').html(`Add <span class="code">${data.AddValue?.FixedValue?.Value}</span> to <span class="code">${data.TargetType?.Alias}</span>'\s <span class="code">${data.Key}</span> and clamp between <span class="code">${data.Min?.FixedValue?.Value}</span> and <span class="code">${data.Max?.FixedValue?.Value}</span>.`));
+    container.append($('<div>').html(`Add <span class="code">${data.AddValue?.FixedValue?.Value}</span> to <span class="code">${toTargetName(data.TargetType)}</span>'\s <span class="code">${data.Key}</span> and clamp between <span class="code">${data.Min?.FixedValue?.Value}</span> and <span class="code">${data.Max?.FixedValue?.Value}</span>.`));
   },
 
   SetDynamicValueByProperty: function(data, container) {
-    container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${data.ReadTargetType?.Alias}</span>'\s <span class="code">${data.Value}</span>.`));
+    container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${toTargetName(data.ReadTargetType)}</span>'\s <span class="code">${data.Value}</span>.`));
   },
 
   SelectAISkillTarget: function(data, container) {
@@ -242,15 +242,15 @@ var gamecoreFunctions =
   // ABILITY ACTIONS (Major)
 
   TriggerAbility: function(data, container) {
-    container.append($('<div>').html(`Trigger <span class="code">${data.TargetType?.Alias}</span>\'s ability <span class="code">${data.AbilityName}</span> with target <span class="code">${data.AbilityInherentTargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Trigger <span class="code">${toTargetName(data.TargetType)}</span>\'s ability <span class="code">${data.AbilityName}</span> with target <span class="code">${toTargetName(data.AbilityInherentTargetType)}</span>.`));
   },
 
   DamageByAttackProperty: function(data, container) {
-    container.append($('<div>').html(`Deal ATK <span class="code">${data.AttackProperty?.DamageType}</span> damage to <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Deal ATK <span class="code">${data.AttackProperty?.DamageType}</span> damage to <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
   FireProjectile: function(data, container) {
-    container.append($('<div>').html(`Fire projectile at <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Fire projectile at <span class="code">${toTargetName(data.TargetType)}</span>.`));
     var onHitActions = data.OnProjectileHit;
     if (onHitActions != undefined)
     {
@@ -266,7 +266,7 @@ var gamecoreFunctions =
   },
 
   FireWaveProjectile: function(data, container) {
-    container.append($('<div>').html(`Fire <span class="code">${data.Count}</span>-hit wave projectile from <span class="code">${data.CasterTargetType?.Alias}</span> to <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Fire <span class="code">${data.Count}</span>-hit wave projectile from <span class="code">${toTargetName(data.CasterTargetType)}</span> to <span class="code">${toTargetName(data.TargetType)}</span>.`));
     // TODO PerProjectileDamage
     var onHitClientActions = data.OnProjectileHitClientOnly;
     if (onHitClientActions != undefined)
@@ -283,18 +283,18 @@ var gamecoreFunctions =
   },
 
   HealHP: function(data, container) {
-    container.append($('<div>').html(`Heal <span class="code">${data.TargetType?.Alias}</span> by <span class="code">${(data.HealPercentage?.FixedValue?.Value ?? 0) * 100}</span>% using formula <span class="code">${data.FormulaType}</span>.`));
+    container.append($('<div>').html(`Heal <span class="code">${toTargetName(data.TargetType)}</span> by <span class="code">${(data.HealPercentage?.FixedValue?.Value ?? 0) * 100}</span>% using formula <span class="code">${data.FormulaType}</span>.`));
   },
   LoseHPByRatio: function(data, container) {
-    container.append($('<div>').html(`Have <span class="code">${data.TargetType?.Alias}</span> lose <span class="code">${data.RatioType}</span>.`));
+    container.append($('<div>').html(`Have <span class="code">${toTargetName(data.TargetType)}</span> lose <span class="code">${data.RatioType}</span>.`));
   },
   
 
   SetActionDelay: function(data, container) {
-    container.append($('<div>').html(`Set action delay for <span class="code">${data.TargetType?.Alias}</span> to <span class="code">${data.Value?.FixedValue?.Value}</span>.`));
+    container.append($('<div>').html(`Set action delay for <span class="code">${toTargetName(data.TargetType)}</span> to <span class="code">${data.Value?.FixedValue?.Value}</span>.`));
   },
   ModifyActionDelay: function(data, container) {
-    container.append($('<div>').html(`Change action delay for <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Change action delay for <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
   ModifyTeamBoostPoint: function(data, container) {
@@ -302,43 +302,43 @@ var gamecoreFunctions =
   },
 
   ShowEntityFloatMessage: function(data, container) {
-    container.append($('<div>').html(`Show message above <span class="code">${data.TargetType?.Alias}</span>: "<span class="code">${translate(data.ContentID?.Hash)}</span>".`));
+    container.append($('<div>').html(`Show message above <span class="code">${toTargetName(data.TargetType)}</span>: "<span class="code">${translate(data.ContentID?.Hash)}</span>".`));
   },
 
   AddModifier: function(data, container) {
-    container.append($('<div>').html(`Apply modifier <span class="code">${data.ModifierName}</span> to <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Apply modifier <span class="code">${data.ModifierName}</span> to <span class="code">${toTargetName(data.TargetType)}</span>.`));
     // TODO handle DynamicValues ShowUIMessageDelayTime
   },
   RemoveModifier: function(data, container) {
-    container.append($('<div>').html(`Remove modifier <span class="code">${data.ModifierName}</span> from <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Remove modifier <span class="code">${data.ModifierName}</span> from <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
   RemoveSelfModifier: function(data, container) {
     container.append($('<div>').html(`Remove this modifier.`));
   },
   StackProperty: function(data, container) {
-    container.append($('<div>').html(`Add a stack of <span class="code">${data.Property}</span> to <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Add a stack of <span class="code">${data.Property}</span> to <span class="code">${toTargetName(data.TargetType)}</span>.`));
     // TODO handle PropertyValue DynamicValues
   },
   TriggerModifierCustomEvent: function(data, container) {
-    container.append($('<div>').html(`Trigger <span class="code">${data.TargetType?.Alias}</span>\'s modifier <span class="code">${data.EventType} ${data.DynamicKey}</span>.`));
+    container.append($('<div>').html(`Trigger <span class="code">${toTargetName(data.TargetType)}</span>\'s modifier <span class="code">${data.EventType} ${data.DynamicKey}</span>.`));
   },
   DispelStatus: function(data, container) {
-    container.append($('<div>').html(`Dispel <span class="code">${data.TargetType?.Alias}</span>\'s <span class="code">${data.Order ?? 'All'} ${data.BuffType ?? 'Debuff'}</span>.`));
+    container.append($('<div>').html(`Dispel <span class="code">${toTargetName(data.TargetType)}</span>\'s <span class="code">${data.Order ?? 'All'} ${data.BuffType ?? 'Debuff'}</span>.`));
   },
 
   InitShield: function(data, container) {
-    container.append($('<div>').html(`Apply shield to <span class="code">${data.TargetType?.Alias}</span> with formula <span class="code">${data.FormulaType}</span>.`));
+    container.append($('<div>').html(`Apply shield to <span class="code">${toTargetName(data.TargetType)}</span> with formula <span class="code">${data.FormulaType}</span>.`));
   },
   RemoveShield: function(data, container) {
-    container.append($('<div>').html(`Remove shield from <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Remove shield from <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
   TurnInsertAbility: function(data, container) {
-    container.append($('<div>').html(`Insert ability <span class="code">${data.TargetType?.Alias}</span>\'s <span class="code">${data.AbilityName}</span> ability, targetting <span class="code">${data.AbilityTarget?.Alias}</span> with priority <span class="code">${data.InsertAbilityPriority}</span>.`));
+    container.append($('<div>').html(`Insert ability <span class="code">${toTargetName(data.TargetType)}</span>\'s <span class="code">${data.AbilityName}</span> ability, targetting <span class="code">${toTargetName(data.AbilityTarget)}</span> with priority <span class="code">${data.InsertAbilityPriority}</span>.`));
   },
 
   Retarget: function(data, container) {
-    container.append($('<div>').html(`Targetting <span class="code">${data.MaxNumber?.FixedValue?.Value}</span> of <span class="code">${data.TargetType?.Alias}</span>,`));
+    container.append($('<div>').html(`Targetting <span class="code">${data.MaxNumber?.FixedValue?.Value}</span> of <span class="code">${toTargetName(data.TargetType)}</span>,`));
     if (data.Predicate != undefined)
     {
       container.append($('<div>').html(`With Condition:`));
@@ -412,10 +412,10 @@ var gamecoreFunctions =
   },
 
   CharacterChangePhase: function(data, container) {
-    container.append($('<div>').html(`Change <span class="code">${data.TargetType?.Alias}</span>\'s phase to <span class="code">${data.PhaseName}</span>.`));
+    container.append($('<div>').html(`Change <span class="code">${toTargetName(data.TargetType)}</span>\'s phase to <span class="code">${data.PhaseName}</span>.`));
   },  
   SetMonsterPhase: function(data, container) {
-    container.append($('<div>').html(`Change <span class="code">${data.TargetType?.Alias}</span>\'s phase to <span class="code">${data.PhaseNum}</span>.`));
+    container.append($('<div>').html(`Change <span class="code">${toTargetName(data.TargetType)}</span>\'s phase to <span class="code">${data.PhaseNum}</span>.`));
   },
   LockHP: function(data, container) {
     container.append($('<div>').html(`Lock HP to <span class="code">${(data.Threshold?.FixedValue?.Value) * 100}</span>%.`));
@@ -426,7 +426,7 @@ var gamecoreFunctions =
   },
 
   ExitBreakState: function(data, container) {
-    container.append($('<div>').html(`Clear <span class="code">${data.TargetType?.Alias}</span>\'s break state.`));
+    container.append($('<div>').html(`Clear <span class="code">${toTargetName(data.TargetType)}</span>\'s break state.`));
   },
 
   SkillExecutionStart: function(data, container) {
@@ -439,10 +439,10 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Finalize damage.`));
   },
   SetDieImmediately: function(data, container) {
-    container.append($('<div>').html(`Have <span class="code">${data.TargetType?.Alias}</span> die immediately.`));
+    container.append($('<div>').html(`Have <span class="code">${toTargetName(data.TargetType)}</span> die immediately.`));
   },
   ForceKill: function(data, container) {
-    container.append($('<div>').html(`Kill <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div>').html(`Kill <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
   EscapeFromBattle: function(data, container) {
     container.append($('<div>').html(`Escape from battle.`));
@@ -467,19 +467,19 @@ var gamecoreFunctions =
   },
 
   TriggerAnimState: function(data, container) {
-    container.append($('<div class="minor">').html(`Play <span class="code">${data.TargetType?.Alias}</span>\'s animation <span class="code">${data.AnimStateName}</span> / <span class="code">${data.AnimLogicState}</span>.`));
+    container.append($('<div class="minor">').html(`Play <span class="code">${toTargetName(data.TargetType)}</span>\'s animation <span class="code">${data.AnimStateName}</span> / <span class="code">${data.AnimLogicState}</span>.`));
   },
 
   TriggerEffect: function(data, container) {
-    container.append($('<div class="minor">').html(`Play visual effect at <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div class="minor">').html(`Play visual effect at <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
   TriggerEffectList: function(data, container) {
-    container.append($('<div class="minor">').html(`Play multiple visual effects at <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div class="minor">').html(`Play multiple visual effects at <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
   RemoveEffect: function(data, container) {
-    container.append($('<div class="minor">').html(`Remove visual effect from <span class="code">${data.TargetType?.Alias}</span>.`));
+    container.append($('<div class="minor">').html(`Remove visual effect from <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
   GlobalMainIntensityEffect: function(data, container) {
@@ -495,7 +495,7 @@ var gamecoreFunctions =
   },
 
   ScaleCharacterModel: function(data, container) {
-    container.append($('<div class="minor">').html(`Change the scale of <span class="code">${data.TargetType?.Alias}</span> to <span class="code">${data.ModelScaleBase}</span>.`));
+    container.append($('<div class="minor">').html(`Change the scale of <span class="code">${toTargetName(data.TargetType)}</span> to <span class="code">${data.ModelScaleBase}</span>.`));
   },
 
   TriggerSound: function(data, container) {
@@ -503,7 +503,7 @@ var gamecoreFunctions =
   },
 
   ShowBossInfoBar: function(data, container) {
-    container.append($('<div class="minor">').html(`Set show boss info bar for <span class="code">${data.TargetType?.Alias}</span> to <span class="code">${data.IsShow}</span>.`));
+    container.append($('<div class="minor">').html(`Set show boss info bar for <span class="code">${toTargetName(data.TargetType)}</span> to <span class="code">${data.IsShow}</span>.`));
   },
 
   ShowBattleUI: function(data, container) {
@@ -511,7 +511,7 @@ var gamecoreFunctions =
   },
   // not sure what the IsShow parameter is really named
   //MakeCharacterHUDVisible: function(data, container) {
-  //  container.append($('<div class="minor">').html(`Set show character HUD for <span class="code">${data.TargetType?.Alias}</span> to <span class="code">${data.IsShow}</span>.`));
+  //  container.append($('<div class="minor">').html(`Set show character HUD for <span class="code">${toTargetName(data.TargetType)}</span> to <span class="code">${data.IsShow}</span>.`));
   //},
   ShowUIPage: function(data, container) {
     container.append($('<div class="minor">').html(`Show help page.`));
@@ -530,30 +530,30 @@ var gamecoreFunctions =
     container.append($('<div class="minor">').html(`Change stage visibility to <span class="code">${!(data.IsHide ?? false)}</span>.`));
   },
   SetEntityVisible: function(data, container) {
-    container.append($('<div class="minor">').html(`Change <span class="code">${data.TargetType?.Alias}</span> visibility to <span class="code">${data.Visible ?? false}</span>.`));
+    container.append($('<div class="minor">').html(`Change <span class="code">${toTargetName(data.TargetType)}</span> visibility to <span class="code">${data.Visible ?? false}</span>.`));
   },
   SetAttachmentVisibility: function(data, container) {
-    container.append($('<div class="minor">').html(`Change <span class="code">${data.TargetType?.Alias}</span>\'s <span class="code">${data.AttachPoints.map(i => i.Name).join(', ')}</span> visibility to <span class="code">${data.Visibility ?? false}</span>.`));
+    container.append($('<div class="minor">').html(`Change <span class="code">${toTargetName(data.TargetType)}</span>\'s <span class="code">${data.AttachPoints.map(i => i.Name).join(', ')}</span> visibility to <span class="code">${data.Visibility ?? false}</span>.`));
   },
 
   StartAim: function(data, container) {
-    container.append($('<div class="minor">').html(`Aim at <span class="code">${data.TargetType?.Alias}</span> over <span class="code">${data.TransitTime}</span> seconds.`));
+    container.append($('<div class="minor">').html(`Aim at <span class="code">${toTargetName(data.TargetType)}</span> over <span class="code">${data.TransitTime}</span> seconds.`));
   },
   StopAim: function(data, container) {
     container.append($('<div class="minor">').html(`Stop aiming.`));
   },
   StartEffectAim: function(data, container) {
-    container.append($('<div class="minor">').html(`Aim <span class="code">${data.UniqueEffectName}</span> at <span class="code">${data.TargetType?.Alias}</span> over <span class="code">${data.Duration}</span> seconds.`));
+    container.append($('<div class="minor">').html(`Aim <span class="code">${data.UniqueEffectName}</span> at <span class="code">${toTargetName(data.TargetType)}</span> over <span class="code">${data.Duration}</span> seconds.`));
   },
 
   MoveToTargetPosition: function(data, container) {
-    container.append($('<div class="minor">').html(`Move to <span class="code">${data.TargetType?.Alias}</span> with offset <span class="code">${data.OffsetTargetDistance?.FixedValue?.Value}</span>.`));
+    container.append($('<div class="minor">').html(`Move to <span class="code">${toTargetName(data.TargetType)}</span> with offset <span class="code">${data.OffsetTargetDistance?.FixedValue?.Value}</span>.`));
   },  
   MoveToTargetList: function(data, container) {
-    container.append($('<div class="minor">').html(`Move <span class="code">${data.TargetType?.Alias}</span> with animation <span class="code">${data.AnimStateName}</span>.`));
+    container.append($('<div class="minor">').html(`Move <span class="code">${toTargetName(data.TargetType)}</span> with animation <span class="code">${data.AnimStateName}</span>.`));
   },  
   TriggerAnimStateWithMove: function(data, container) {
-    container.append($('<div class="minor">').html(`Move <span class="code">${data.TargetType?.Alias}</span> with animation <span class="code">${data.AnimStateName}</span>.`));
+    container.append($('<div class="minor">').html(`Move <span class="code">${toTargetName(data.TargetType)}</span> with animation <span class="code">${data.AnimStateName}</span>.`));
     var eventList = data.EventList;
     if (eventList != undefined)
       for (var i = 0; i < eventList.length; i++)
@@ -577,9 +577,21 @@ var gamecoreFunctions =
     container.append($('<div class="minor">').html(`Wait <span class="code">${data.WaitTime}</span> seconds.`));
   },  
   WaitAnimState: function(data, container) {
-    container.append($('<div class="minor">').html(`Wait for <span class="code">${data.TargetType?.Alias}</span>\'s <span class="code">${data.AnimStateName}</span> animation to reach <span class="code">${(data.NormalizedTimeEnd?.FixedValue?.Value ?? 1) * 100}</span>%.`));
+    container.append($('<div class="minor">').html(`Wait for <span class="code">${toTargetName(data.TargetType)}</span>\'s <span class="code">${data.AnimStateName}</span> animation to reach <span class="code">${(data.NormalizedTimeEnd?.FixedValue?.Value ?? 1) * 100}</span>%.`));
   },
 };
+
+function toTargetName(data)
+{
+  switch (data?.$type)
+  {
+    case 'RPG.GameCore.TargetAlias':
+      return data.Alias ?? 'Caster(?)';
+    case 'RPG.GameCore.TargetConcat':
+      return data.Targets?.map(t => toTargetName(t))?.join(', ');
+  }
+  return 'Caster(?)';
+}
 
 function createGamecoreView(data)
 {
