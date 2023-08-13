@@ -42,7 +42,7 @@ var gamecoreFunctions =
   },
 
   ComplexSkillAIAxis: function(data, container) {
-    container.append($('<div>').html(`Complex skill AI. <a href="index.html">View Details</a>`));
+    container.append($('<div>').html(`Complex skill AI. <a href="auto.html">View Details</a>`));
   },
 
   // PREDICATES
