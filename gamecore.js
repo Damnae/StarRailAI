@@ -637,6 +637,8 @@ function formulaView(data)
     var variables = postFixExpr.DynamicHashes;
 
     var formula = '';
+    var stack = [];
+
     var bytes = atob(opCodes);
     for (var i = 0; i < bytes.length; i++)
     {
@@ -644,35 +646,46 @@ function formulaView(data)
       switch (opCode)
       {
         case 0: // Constant
-          formula += `Const(${cleanupFloat(constants?.[bytes.charCodeAt(++i)]?.Value)})`;
-          //formula += ;
+          stack.push(cleanupFloat(constants?.[bytes.charCodeAt(++i)]?.Value));
           break;
         case 1: // Variable
-          formula += `Var(${variables?.[bytes.charCodeAt(++i)]})`;
+          stack.push(`Var(${variables?.[bytes.charCodeAt(++i)]})`);
           break;
         case 2: // Add
-          formula += '+';
+          var left = stack.pop();
+          var right = stack.pop();
+          stack.push(`(${left}) + (${right})`);
           break;
         case 3: // Subtract
-          formula += '-';
+          var left = stack.pop();
+          var right = stack.pop();
+          stack.push(`(${left}) - (${right})`);
           break;
         case 4: // Multiply
-          formula += '*';
+          var left = stack.pop();
+          var right = stack.pop();
+          stack.push(`(${left}) * (${right})`);
           break;
         case 5: // Divide
-          formula += '/';
+          var left = stack.pop();
+          var right = stack.pop();
+          stack.push(`(${left}) / (${right})`);
           break;
         case 6: // Negative
-          formula += 'Neg';
+          var right = stack.pop();
+          stack.push(`-(${right})`);
           break;
         case 7: // Not
-          formula += '!';
+          var right = stack.pop();
+          stack.push(`!(${right})`);
           break;
         case 8: // Call
-          formula += `Call(${bytes.charCodeAt(++i)})`;
+          var right = stack.pop();
+          stack.push(`Call(${bytes.charCodeAt(++i)}, ${right}`);
           break;
         case 9: // Return
-          formula += '=';
+          var result = stack.pop();
+          formula = result;
           break;
       }
     }
