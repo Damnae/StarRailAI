@@ -295,7 +295,7 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Heal <span class="code">${toTargetName(data.TargetType)}</span> by <span class="code">${(formulaView(data.HealPercentage))}</span>% using formula <span class="code">${data.FormulaType}</span>.`));
   },
   SetHP: function(data, container) {
-    container.append($('<div>').html(`Set <span class="code">${toTargetName(data.TargetType)}</span>\'s HP to <span class="code">${data.ModifyValue}</span>.`));
+    container.append($('<div>').html(`Set <span class="code">${toTargetName(data.TargetType)}</span>\'s HP to <span class="code">${formulaView(data.ModifyValue)}</span>.`));
   },
   LoseHPByRatio: function(data, container) {
     container.append($('<div>').html(`Have <span class="code">${toTargetName(data.TargetType)}</span> lose <span class="code">${data.RatioType}</span>.`));
