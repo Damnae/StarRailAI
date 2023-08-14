@@ -652,23 +652,23 @@ function formulaView(data)
           stack.push(`Var(${variables?.[bytes.charCodeAt(++i)]})`);
           break;
         case 2: // Add
-          var left = stack.pop();
           var right = stack.pop();
+          var left = stack.pop();
           stack.push(`(${left}) + (${right})`);
           break;
         case 3: // Subtract
-          var left = stack.pop();
           var right = stack.pop();
+          var left = stack.pop();
           stack.push(`(${left}) - (${right})`);
           break;
         case 4: // Multiply
-          var left = stack.pop();
           var right = stack.pop();
+          var left = stack.pop();
           stack.push(`(${left}) * (${right})`);
           break;
         case 5: // Divide
-          var left = stack.pop();
           var right = stack.pop();
+          var left = stack.pop();
           stack.push(`(${left}) / (${right})`);
           break;
         case 6: // Negative
