@@ -140,6 +140,10 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> is <span class="code">${toTargetName(data.CompareType)}</span>.`));
   },
 
+  ByIsTurnActionEntity: function(data, container) {
+    container.append($('<div>').html(`Check if it's <span class="code">${toTargetName(data.TargetType)}</span>\'s turn.`));
+  },
+
   // SELECTORS
 
   AIModifierNameSelector: function(data, container) {
@@ -305,7 +309,9 @@ var gamecoreFunctions =
   },
 
   SetActionDelay: function(data, container) {
-    container.append($('<div>').html(`Set action delay for <span class="code">${toTargetName(data.TargetType)}</span> to <span class="code">${formulaView(data.Value)}</span>.`));
+    if (data.NormalizedValue != undefined)
+    container.append($('<div>').html(`Set action delay for <span class="code">${toTargetName(data.TargetType)}</span> to <span class="code">${formulaView(data.NormalizedValue)}%</span>.`));
+    else container.append($('<div>').html(`Set action delay for <span class="code">${toTargetName(data.TargetType)}</span> to <span class="code">${formulaView(data.Value)}</span>.`));
   },
   ModifyActionDelay: function(data, container) {
     container.append($('<div>').html(`Change action delay for <span class="code">${toTargetName(data.TargetType)}</span>.`));
@@ -622,8 +628,76 @@ function formulaView(data)
   var fixedValue = data?.FixedValue?.Value;
   if (fixedValue != undefined)
     return fixedValue;
-  // TODO
+
+  var postFixExpr = data?.PostfixExpr;
+  if (postFixExpr != undefined)
+  {
+    var opCodes = postFixExpr.OpCodes;
+    var constants = postFixExpr.FixedValues;
+    var variables = postFixExpr.DynamicHashes;
+
+    var formula = '';
+    var bytes = atob(opCodes);
+    for (var i = 0; i < bytes.length; i++)
+    {
+      var opCode = bytes.charCodeAt(i);
+      switch (opCode)
+      {
+        case 0: // Constant
+          formula += `Const(${cleanupFloat(constants?.[bytes.charCodeAt(++i)]?.Value)})`;
+          //formula += ;
+          break;
+        case 1: // Variable
+          formula += `Var(${variables?.[bytes.charCodeAt(++i)]})`;
+          break;
+        case 2: // Add
+          formula += '+';
+          break;
+        case 3: // Subtract
+          formula += '-';
+          break;
+        case 4: // Multiply
+          formula += '*';
+          break;
+        case 5: // Divide
+          formula += '/';
+          break;
+        case 6: // Negative
+          formula += 'Neg';
+          break;
+        case 7: // Not
+          formula += '!';
+          break;
+        case 8: // Call
+          formula += `Call(${bytes.charCodeAt(++i)})`;
+          break;
+        case 9: // Return
+          formula += '=';
+          break;
+      }
+    }
+
+    return formula;
+  }
+
   return undefined;
+}
+
+var dynamicValueTypeToIndex =
+{
+  None: 0,
+  SkillParam: 1,
+  SkillTreeParam: 2,
+  SkillEquip: 3,
+  SkillRank: 4,
+  SkillRelic: 5,
+  BattleEvent: 6,
+  StageBattleEvent: 7,
+}
+
+function cleanupFloat(value)
+{
+  return parseFloat(value.toFixed(4));
 }
 
 function createGamecoreView(data)
