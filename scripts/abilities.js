@@ -8,6 +8,15 @@ function createSkillView(data)
     var description = translate(data.SimpleSkillDesc?.Hash ?? data.SkillDesc?.Hash)?.replace('\\n', ' ');
     if (description != undefined)
       c.append($('<p class="minor">').html(description));
+
+    var abilityName = data.AbilityName;
+    if (abilityName != undefined)
+    {
+      var ability = findAbility(abilityName);
+      if (ability != undefined)
+        c.append(createAbilityView(ability));
+    }
+    
     return true;
   }));
   return container;
@@ -107,12 +116,13 @@ function findSkillAbilities(name, data)
 
 function findAbility(name, abilityData)
 {
-  for (var i = 0; i < abilityData.AbilityList.length; i++)
-  {
-    var ability = abilityData.AbilityList[i];
-    if (ability.Name == name)
-      return ability;
-  }
+  if (abilityData != undefined)
+    for (var i = 0; i < abilityData.AbilityList.length; i++)
+    {
+      var ability = abilityData.AbilityList[i];
+      if (ability.Name == name)
+        return ability;
+    }
 
   for (var i = 0; i < commonAbilities.AbilityList.length; i++)
   {

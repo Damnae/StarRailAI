@@ -199,7 +199,7 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${toTargetName(data.ReadTargetType)}</span>'\s <span class="code">${data.Value}</span>.`));
   },
   SetDynamicValueByModifierValue: function(data, container) {
-    container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${data.ModifierName}</span>\'s <span class="code">${data.ValueType}</span>.`));
+    container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${toTargetName(data.ReadTargetType)}</span>\'s <span class="code">${data.ModifierName}</span>\'s <span class="code">${data.ValueType}</span>.`));
   },
 
   SelectAISkillTarget: function(data, container) {
