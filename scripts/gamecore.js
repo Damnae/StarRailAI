@@ -366,7 +366,14 @@ var gamecoreFunctions =
     var damageText = damageFormula.join(', ');
     if (data.AttackProperty?.HitSplitRatio != undefined)
       damageText = `<span class="code">${formulaView(data.AttackProperty?.HitSplitRatio)}</span> of ` + damageText;
-    damageText += ` as <span class="code">${data.AttackProperty?.DamageType ?? "Physical"}</span>`;
+    var element = data.AttackProperty?.DamageType;
+    if (element == undefined)
+    {
+      if (data.AttackProperty?.DamageTypeFromAttacker ?? false)
+        element = 'AttackerElement';
+      else element = 'Physical';
+    }
+    damageText += ` as <span class="code">${element}</span>`;
     if (data.AttackProperty?.AttackType != undefined)
       damageText += ` <span class="code">${data.AttackProperty?.AttackType}</span>`;
 
@@ -434,7 +441,7 @@ var gamecoreFunctions =
   },
 
   HealHP: function(data, container) {
-    container.append($('<div>').html(`Heal <span class="code">${toTargetName(data.TargetType)}</span> by <span class="code">${(formulaView(data.HealPercentage))}</span>% using formula <span class="code">${data.FormulaType}</span>.`));
+    container.append($('<div>').html(`Heal <span class="code">${toTargetName(data.TargetType)}</span> by <span class="code">${(formulaView(data.HealPercentage))}</span>% <span class="code">${data.FormulaType ?? "ATK"}</span>.`));
   },
   SetHP: function(data, container) {
     container.append($('<div>').html(`Set <span class="code">${toTargetName(data.TargetType)}</span>\'s HP to <span class="code">${formulaView(data.ModifyValue)}</span>.`));
