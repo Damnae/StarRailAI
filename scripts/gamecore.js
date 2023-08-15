@@ -130,7 +130,15 @@ var gamecoreFunctions =
   },
 
   BySkillPointActivated: function(data, container) {
-    container.append($('<div>').html(`Check trace <span class="code">${data.PointTriggerKey?.Hash}</span> unlocked.`));
+    var traceName = '';
+    switch (data.PointTriggerKey?.Hash)
+    {
+      case 1455742903: traceName = 'A2'; break;
+      case 1455742904: traceName = 'A4'; break;
+      case 1455742905: traceName = 'A6'; break;
+      default: traceName = data.PointTriggerKey?.Hash; break;
+    }
+    container.append($('<div>').html(`Check trace <span class="code">${traceName}</span> unlocked.`));
   },  
   ByRankActivated: function(data, container) {
     var eidolonName = '';
