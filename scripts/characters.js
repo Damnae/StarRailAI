@@ -30,14 +30,7 @@ function createCharacterDetailView(configData, characterData, abilityData)
       var skillConfig = getSkillConfig(skillId);
 
       if (skillConfig != undefined)
-        container.append(createExplanationView(skillConfig, function(c)
-        {
-          c.append($('<div>').html(`<h4>${translate(skillConfig.SkillTag.Hash)} ${translate(skillConfig.SkillTypeDesc.Hash)} - ${translate(skillConfig.SkillName.Hash)} <span class="code">(${skillConfig.SkillTriggerKey})</span></h4>`));
-          var description = translate(skillConfig.SimpleSkillDesc.Hash)?.replace('\\n', ' ');
-          if (description != undefined)
-            c.append($('<p class="minor">').html(description));
-          return true;
-        }));
+        container.append(createSkillView(skillConfig));
     }
   }
 

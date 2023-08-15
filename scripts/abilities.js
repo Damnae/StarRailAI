@@ -1,4 +1,18 @@
 
+function createSkillView(data)
+{
+  var container = $(`<div class="skill">`);
+  container.append(createExplanationView(data, function(c)
+  {
+    c.append($('<div>').html(`<h4>${translate(data.SkillTag?.Hash)} ${translate(data.SkillTypeDesc?.Hash)} - ${translate(data.SkillName?.Hash)} <span class="code">(${data.SkillTriggerKey})</span></h4>`));
+    var description = translate(data.SimpleSkillDesc?.Hash ?? data.SkillDesc?.Hash)?.replace('\\n', ' ');
+    if (description != undefined)
+      c.append($('<p class="minor">').html(description));
+    return true;
+  }));
+  return container;
+}
+
 function createAbilityView(data)
 {
   var container = $(`<div class="ability">`);
@@ -123,13 +137,15 @@ function findAbility(name, abilityData)
 var skillConfigs = {
 };
 
-function getSkillConfig(id)
+function getSkillConfig(id, rank)
 {
   var allRanks = skillConfigs[id];
   if (allRanks == undefined)
     return undefined;
 
-  var rank = (Object.keys(allRanks).length * 2) / 3;
+  if (rank == undefined)
+    rank = (Object.keys(allRanks).length * 2) / 3;
+
   return allRanks[rank];
 }
 
@@ -143,6 +159,11 @@ function initializeAbilities(type)
 
   var commonAbilityPath = `Config/ConfigAbility/${type}/${type}_Common_Ability.json`;
   var skillConfigPath = `ExcelOutput/${type}SkillConfig.json`;
+
+  if (type == 'RelicSet')
+    commonAbilityPath = commonAbilityPath.replace('RelicSet/RelicSet_Common_', 'Relic');
+  else if (type == 'Equipment')
+    commonAbilityPath = commonAbilityPath.replace('Equipment/Equipment_Common_', 'Equipmemt');
 
   return $.when(
     $.ajax({

@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang=en>
+  <head>
+
+    <meta charset=utf-8>
+    <title>StarRail AI - Relics</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="scripts/gamecore.js"></script>
+    <script src="scripts/abilities.js"></script>
+    <script src="scripts/translation.js"></script>
+  </head>
+  <body>
+    
+    <div id="content">
+      <div class="half">
+        <h1>Relics</h1>
+        <div id="relicContainer"></div>
+      </div>
+    </div>
+
+    <script>
+
+      // AVATAR
+
+      function createRelicView(data)
+      {
+        var container = $(`<div id="relic_${data.SetID}" class="relic">`);
+
+        var title = $(`<h2 class="section-opener">`).html(`${translate(data.SetName?.Hash)} <span class="code">(${data.SetID})</span>`);
+        var content = $(`<div class="section-content">`);
+
+        container.append(title);
+        container.append(content);
+        
+        content.append(createExplanationView(data, function(c)
+        {
+          c.append($('<div>').text('Config'));
+          return true;
+        }));
+
+        title.click(function(event) {
+          event.stopPropagation();
+          content.slideToggle();
+
+          if (!content.data('opened')) 
+          {
+            for (var i = 0; i < data.SetSkillList.length; i++)
+            {
+              var rank = data.SetSkillList[i];
+              var skillConfig = getSkillConfig(data.SetID, rank);
+              if (skillConfig != undefined)
+                content.append(createSkillView(skillConfig)); // shouldn't use this as the data is pretty different
+              else console.log('Skill config not found: ' + data.SetID);
+            }
+
+            content.data('opened', true);
+          }
+        });
+
+        return container;
+      }
+
+      // INITIALISATION
+
+      function initialize()
+      {
+        $.ajax({
+          url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/ExcelOutput/RelicSetConfig.json',
+          type: 'GET',
+          dataType: 'json',
+          cache: true,
+          success: function(data)
+          {
+            var container = $('#relicContainer');  
+            for (var key in data) 
+              if (data.hasOwnProperty(key)) 
+              {
+                var avatar = data[key];
+                container.append(createRelicView(avatar));
+              }
+          },
+          error: function(xhr, status, error) 
+          {
+            console.error('RelicSet Config Error:', error);
+          },
+        });
+      }
+
+      $(function() { 
+        initializeTranslation()
+          .then(() => initializeAbilities('RelicSet'))
+          .then(() => initialize());
+      });
+    </script>
+  </body>
+</html>

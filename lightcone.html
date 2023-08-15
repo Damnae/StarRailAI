@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang=en>
+  <head>
+
+    <meta charset=utf-8>
+    <title>StarRail AI - Light Cones</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="scripts/gamecore.js"></script>
+    <script src="scripts/abilities.js"></script>
+    <script src="scripts/translation.js"></script>
+  </head>
+  <body>
+    
+    <div id="content">
+      <div class="half">
+        <h1>Light Cones</h1>
+        <div id="equipmentContainer"></div>
+      </div>
+    </div>
+
+    <script>
+
+      // AVATAR
+
+      function createEquipmentView(data)
+      {
+        var container = $(`<div id="equipment_${data.EquipmentID}" class="equipment">`);
+
+        var title = $(`<h2 class="section-opener">`).html(`${translate(data.EquipmentName?.Hash)} <span class="code">(${data.EquipmentID})</span>`);
+        var content = $(`<div class="section-content">`);
+
+        container.append(title);
+        container.append(content);
+        
+        content.append(createExplanationView(data, function(c)
+        {
+          c.append($('<div>').text('Config'));
+          return true;
+        }));
+
+        title.click(function(event) {
+          event.stopPropagation();
+          content.slideToggle();
+
+          if (!content.data('opened')) 
+          {
+            var skillConfig = getSkillConfig(data.SkillID, 1);
+            if (skillConfig != undefined)
+              content.append(createSkillView(skillConfig));
+            else console.log('Skill config not found: ' + data.SkillID);
+
+            content.data('opened', true);
+          }
+        });
+
+        return container;
+      }
+
+      // INITIALISATION
+
+      function initialize()
+      {
+        $.ajax({
+          url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/ExcelOutput/EquipmentConfig.json',
+          type: 'GET',
+          dataType: 'json',
+          cache: true,
+          success: function(data)
+          {
+            var container = $('#equipmentContainer');  
+            for (var key in data) 
+              if (data.hasOwnProperty(key)) 
+              {
+                var avatar = data[key];
+                container.append(createEquipmentView(avatar));
+              }
+          },
+          error: function(xhr, status, error) 
+          {
+            console.error('Equipment Config Error:', error);
+          },
+        });
+      }
+
+      $(function() { 
+        initializeTranslation()
+          .then(() => initializeAbilities('Equipment'))
+          .then(() => initialize());
+      });
+    </script>
+  </body>
+</html>
