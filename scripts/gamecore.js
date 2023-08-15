@@ -133,7 +133,16 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Check trace <span class="code">${data.PointTriggerKey?.Hash}</span> unlocked.`));
   },  
   ByRankActivated: function(data, container) {
-    container.append($('<div>').html(`Check eidolon <span class="code">${data.TriggerKey?.Hash}</span> unlocked.`));
+    var eidolonName = '';
+    switch (data.TriggerKey?.Hash)
+    {
+      case 2089636447: eidolonName = 'E1'; break;
+      case 523552506: eidolonName = 'E2'; break;
+      case 1686351920: eidolonName = 'E4'; break;
+      case -1445815962: eidolonName = 'E6'; break;
+      default: eidolonName = data.TriggerKey?.Hash; break;
+    }
+    container.append($('<div>').html(`Check eidolon <span class="code">${eidolonName}</span> unlocked.`));
   },
 
   ByCompareTarget: function(data, container) {
@@ -149,7 +158,7 @@ var gamecoreFunctions =
   },
 
   ByCurrentSkillType: function(data, container) {
-    container.append($('<div>').html(`Check if the skill type is <span class="code">${data.SkillType}</span>.`));
+    container.append($('<div>').html(`Check if the skill type is <span class="code">${data.SkillType ?? "Basic ATK"}</span>.`));
   },
 
   ByHasStanceWeak: function(data, container) {
@@ -206,6 +215,10 @@ var gamecoreFunctions =
 
   ByIsStageFirstWave: function(data, container) {
     container.append($('<div>').html(`Check if it's the first wave of a stage.`));
+  },
+
+  ByHaveEnemyAlive: function(data, container) {
+    container.append($('<div>').html(`Check if <span class="code">${toTargetName(data.TargetType)}</span> has a living enemy.`));
   },
 
   // SELECTORS
@@ -449,7 +462,14 @@ var gamecoreFunctions =
   },
 
   AddModifier: function(data, container) {
-    container.append($('<div>').html(`Apply modifier <span class="code">${data.ModifierName}</span> to <span class="code">${toTargetName(data.TargetType)}</span>.`));
+    var text = `Apply modifier <span class="code">${data.ModifierName}</span> to <span class="code">${toTargetName(data.TargetType)}</span>`;
+    if (data.Chance != undefined)
+      text += ` with <span class="code">${formulaView(data.Chance)}</span> base chance`;
+    if (data.LifeTime != undefined)
+      text += ` for <span class="code">${formulaView(data.LifeTime)}</span> turns`;
+    text += `.`;
+
+    container.append($('<div>').html(text));
     var dynamicValues = data.DynamicValues;
     for (var key in dynamicValues) 
       if (dynamicValues.hasOwnProperty(key)) 
@@ -472,10 +492,10 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Add <span class="code">${formulaView(data.PropertyValue)} ${data.Property}</span> to <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
   TriggerModifierCustomEvent: function(data, container) {
-    container.append($('<div>').html(`Trigger <span class="code">${toTargetName(data.TargetType)}</span>\'s modifier <span class="code">${data.EventType} ${data.DynamicKey}</span>.`));
+    container.append($('<div>').html(`Trigger <span class="code">${toTargetName(data.TargetType)}</span>\'s modifier\'s custom event <span class="code">${data.EventType}</span> with <span class="code">${data.DynamicKey}</span> set to <span class="code">${formulaView(data.Value)}</span>.`));
   },  
   SetModifierValue: function(data, container) {
-    container.append($('<div>').html(`Change <span class="code">${toTargetName(data.TargetType)}</span>\'s modifier <span class="code">${data.ModifierName}</span> value,  <span class="code">${data.ModifyFunction ?? 'Set'} ${formulaView(data.Value)}</span>.`));
+    container.append($('<div>').html(`Change <span class="code">${toTargetName(data.TargetType)}</span>\'s modifier <span class="code">${data.ModifierName}</span> value, <span class="code">${data.ModifyFunction ?? 'Set'} ${formulaView(data.Value)}</span>.`));
   },
   DispelStatus: function(data, container) {
     container.append($('<div>').html(`Dispel <span class="code">${toTargetName(data.TargetType)}</span>\'s <span class="code">${data.Order ?? 'All'} ${data.BuffType ?? 'Debuff'}</span>.`));
