@@ -332,20 +332,24 @@ var gamecoreFunctions =
   },
 
   DamageByAttackProperty: function(data, container) {
-    var damageFormula = '';
+    var damageFormula = [];
     if (data.AttackProperty?.DamagePercentage != undefined)
-      damageFormula = `<span class="code">${formulaView(data.AttackProperty?.DamagePercentage)}</span>% ATK`;
+      damageFormula.push(`<span class="code">${formulaView(data.AttackProperty?.DamagePercentage)}</span>% <span class="code">${data.AttackProperty?.FormulaType ?? "ATK"}</span> damage`);
+    if (data.AttackProperty?.ExtraDamagePercentage != undefined)
+      damageFormula.push(`<span class="code">${formulaView(data.AttackProperty?.ExtraDamagePercentage)}</span>% <span class="code">${data.AttackProperty?.ExtraFormulaType}</span> damage`);
     if (data.AttackProperty?.DamageValue != undefined)
-      damageFormula = `<span class="code">${formulaView(data.AttackProperty?.DamageValue)}</span>`;
+      damageFormula.push(`<span class="code">${formulaView(data.AttackProperty?.DamageValue)}</span> flat damage`);
+    if (data.AttackProperty?.StanceValue != undefined)
+      damageFormula.push(`<span class="code">${formulaView(data.AttackProperty?.StanceValue)}</span> toughness damage`);
 
+    var damageText = damageFormula.join(', ');
+    if (data.AttackProperty?.HitSplitRatio != undefined)
+      damageText = `<span class="code">${formulaView(data.AttackProperty?.HitSplitRatio)}</span> of ` + damageText;
+    damageText += ` as <span class="code">${data.AttackProperty?.DamageType ?? "Physical"}</span>`;
     if (data.AttackProperty?.AttackType != undefined)
-      damageFormula += ` <span class="code">${data.AttackProperty?.AttackType}</span>`;
-    
-    var toughnessDamage = '';
-      if (data.AttackProperty?.StanceValue != undefined)
-        toughnessDamage = ` and <span class="code">${formulaView(data.AttackProperty?.StanceValue)}</span> toughness damage`;
-    
-    container.append($('<div>').html(`Deal ${damageFormula} <span class="code">${data.AttackProperty?.DamageType ?? 'Physical'}</span> damage${toughnessDamage} to <span class="code">${toTargetName(data.TargetType)}</span>.`));
+      damageText += ` <span class="code">${data.AttackProperty?.AttackType}</span>`;
+
+    container.append($('<div>').html(`Deal ${damageText} to <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
   FireProjectile: function(data, container) {
@@ -419,7 +423,9 @@ var gamecoreFunctions =
   },
   ModifySPNew: function(data, container) {
     if (data.AddValue != undefined)
-      container.append($('<div>').html(`Add <span class="code">${formulaView(data.AddValue)}</span> to <span class="code">${toTargetName(data.TargetType)}</span>\'s energy.`));
+      container.append($('<div>').html(`Add <span class="code">${formulaView(data.AddValue)}</span> flat energy to <span class="code">${toTargetName(data.TargetType)}</span>.`));
+    else if (data.AddRatio != undefined)
+      container.append($('<div>').html(`Add <span class="code">${formulaView(data.AddRatio)}</span> of the skill energy bonus to <span class="code">${toTargetName(data.TargetType)}</span>.`));
     else container.append($('<div>').html(`Change <span class="code">${toTargetName(data.TargetType)}</span>\'s energy.`));
   },
 
