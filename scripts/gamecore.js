@@ -200,6 +200,14 @@ var gamecoreFunctions =
     container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span>\'s damage type is <span class="code">${data.DamageType}</span>.`));
   },
 
+  ByIsMazeSkillAffectCurrentWave: function(data, container) {
+    container.append($('<div>').html(`Check if the technique should affect the current wave.`));
+  },
+
+  ByIsStageFirstWave: function(data, container) {
+    container.append($('<div>').html(`Check if it's the first wave of a stage.`));
+  },
+
   // SELECTORS
 
   AIModifierNameSelector: function(data, container) {
@@ -262,6 +270,9 @@ var gamecoreFunctions =
   },
   SetDynamicValueByHPRatio: function(data, container) {
     container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${toTargetName(data.ReadTargetType)}</span>\'s HP ratio.`));
+  },
+  SetDynamicValueByStatusCount: function(data, container) {
+    container.append($('<div>').html(`Set <span class="code">${data.DynamicKey}</span> to <span class="code">${toTargetName(data.ReadTargetType)}</span>\'s status effect count.`));
   },
 
   SelectAISkillTarget: function(data, container) {
