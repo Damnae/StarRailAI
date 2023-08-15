@@ -377,6 +377,9 @@ var gamecoreFunctions =
     if (data.AttackProperty?.AttackType != undefined)
       damageText += ` <span class="code">${data.AttackProperty?.AttackType}</span>`;
 
+    if (data.AttackProperty?.FinalFormulaType != undefined)
+      damageText += ` using <span class="code">${data.AttackProperty?.FinalFormulaType}</span>`;
+
     container.append($('<div>').html(`Deal ${damageText} to <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
@@ -480,6 +483,8 @@ var gamecoreFunctions =
     var text = `Apply modifier <span class="code">${data.ModifierName}</span> to <span class="code">${toTargetName(data.TargetType)}</span>`;
     if (data.Chance != undefined)
       text += ` with <span class="code">${formulaView(data.Chance)}</span> base chance`;
+    if (data.MaxLayer != undefined)
+      text += ` with up to <span class="code">${formulaView(data.MaxLayer)}</span> stacks`;
     if (data.LifeTime != undefined)
       text += ` for <span class="code">${formulaView(data.LifeTime)}</span> turns`;
     text += `.`;
