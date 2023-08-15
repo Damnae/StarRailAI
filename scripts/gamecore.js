@@ -332,7 +332,13 @@ var gamecoreFunctions =
   },
 
   DamageByAttackProperty: function(data, container) {
-    container.append($('<div>').html(`Deal <span class="code">${formulaView(data.AttackProperty?.DamagePercentage)}</span>% ATK <span class="code">${data.AttackProperty?.DamageType ?? 'Physical'}</span> damage to <span class="code">${toTargetName(data.TargetType)}</span>.`));
+    var damageFormula = `<span class="code">${formulaView(data.AttackProperty?.DamagePercentage)}</span>%`;
+    if (data.AttackProperty?.HitSplitRatio != undefined)
+      damageFormula = `<span class="code">${formulaView(data.AttackProperty.HitSplitRatio)}</span> of ` + damageFormula;
+    var toughnessDamage = '';
+      if (data.AttackProperty?.StanceValue != undefined)
+        toughnessDamage = ` and <span class="code">${formulaView(data.AttackProperty?.StanceValue)}</span> toughness damage`;
+    container.append($('<div>').html(`Deal ${damageFormula} ATK <span class="code">${data.AttackProperty?.DamageType ?? 'Physical'}</span> damage${toughnessDamage} to <span class="code">${toTargetName(data.TargetType)}</span>.`));
   },
 
   FireProjectile: function(data, container) {
@@ -740,7 +746,7 @@ function formulaView(data)
 {
   var fixedValue = data?.FixedValue?.Value;
   if (fixedValue != undefined)
-    return fixedValue;
+    return cleanupFloat(fixedValue);
 
   var postFixExpr = data?.PostfixExpr;
   if (postFixExpr != undefined)
