@@ -158,35 +158,35 @@ var gamecoreFunctions =
   },
 
   ByIsTurnActionEntity: function(data, container) {
-    container.append($('<div>').html(`Check if it's <span class="code">${toTargetName(data.TargetType)}</span>\'s turn.`));
+    container.append($('<div>').html(`Check it's <span class="code">${toTargetName(data.TargetType)}</span>\'s turn.`));
   },
 
   ByCompareWaveCount: function(data, container) {
-    container.append($('<div>').html(`Check if wave number <span class="code">${data.CompareType} ${formulaView(data.CompareValue)}</span>.`));
+    container.append($('<div>').html(`Check wave number <span class="code">${data.CompareType} ${formulaView(data.CompareValue)}</span>.`));
   },
 
   ByCurrentSkillType: function(data, container) {
-    container.append($('<div>').html(`Check if the skill type is <span class="code">${data.SkillType ?? "Basic ATK"}</span>.`));
+    container.append($('<div>').html(`Check the skill type is <span class="code">${data.SkillType ?? "Basic ATK"}</span>.`));
   },
 
   ByHasStanceWeak: function(data, container) {
-    container.append($('<div>').html(`Check if <span class="code">${toTargetName(data.TargetType)}</span> is weak to <span class="code">${data.WeakType}</span>.`));
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> is weak to <span class="code">${data.WeakType}</span>.`));
   },
 
   ByCompareAbilityProperty: function(data, container) {
-    container.append($('<div>').html(`Check if <span class="code">${toTargetName(data.TargetType)}</span>\s <span class="code">${data.Property}</span> is <span class="code">${data.CompareType} ${formulaView(data.CompareValue)}</span>.`));
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span>\s <span class="code">${data.Property}</span> is <span class="code">${data.CompareType} ${formulaView(data.CompareValue)}</span>.`));
   },
 
   ByAttackType: function(data, container) {
-    container.append($('<div>').html(`Check if attack type is <span class="code">${data.AttackTypes?.join(', ')}.`));
+    container.append($('<div>').html(`Check attack type is <span class="code">${data.AttackTypes?.join(', ')}.`));
   },
 
   ByIsDamageCritical: function(data, container) {
-    container.append($('<div>').html(`Check if critical hit.`));
+    container.append($('<div>').html(`Check critical hit.`));
   },
 
   ByContainsParamFlag: function(data, container) {
-    container.append($('<div>').html(`Check parameters have flag <span class="code">${data.Flag}</span>.`));
+    container.append($('<div>').html(`Check parameter has flag <span class="code">${data.Flag}</span>.`));
   },
 
   ByCompareParamValue: function(data, container) {
@@ -218,15 +218,27 @@ var gamecoreFunctions =
   },
 
   ByIsMazeSkillAffectCurrentWave: function(data, container) {
-    container.append($('<div>').html(`Check if the technique should affect the current wave.`));
+    container.append($('<div>').html(`Check the technique should affect the current wave.`));
   },
 
   ByIsStageFirstWave: function(data, container) {
-    container.append($('<div>').html(`Check if it's the first wave of a stage.`));
+    container.append($('<div>').html(`Check it's the first wave of a stage.`));
   },
 
   ByHaveEnemyAlive: function(data, container) {
-    container.append($('<div>').html(`Check if <span class="code">${toTargetName(data.TargetType)}</span> has a living enemy.`));
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> has a living enemy.`));
+  },
+
+  ByIsEnemy: function(data, container) {
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetTypeA)}</span> and <span class="code">${toTargetName(data.TargetTypeB)}</span> are enemies.`));
+  },
+
+  ByIsTeammate: function(data, container) {
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> is teammate.`));
+  },
+
+  ByCompareMonsterRank: function(data, container) {
+    container.append($('<div>').html(`Check <span class="code">${toTargetName(data.TargetType)}</span> monster rank is <span class="code">${data.CompareType} ${formulaView(data.CompareValue)}</span>.`));
   },
 
   // SELECTORS
@@ -416,6 +428,10 @@ var gamecoreFunctions =
       container.append($('<div class="minor">').html(`Wait for the projectile to hit.`));
   },
 
+  SummonPartner: function(data, container) {
+    container.append($('<div>').html(`Summon <span class="code">${data.MemberName}</span> partner.`));
+  },
+
   ModifyDamageData: function(data, container) {
     container.append($('<div>').html(`Modify damage data:`));
     for (var key in data) 
@@ -469,6 +485,9 @@ var gamecoreFunctions =
     if (data.AddNormalizedValue != undefined)
       container.append($('<div>').html(`Change action delay for <span class="code">${toTargetName(data.TargetType)}</span> by <span class="code">${formulaView(data.AddNormalizedValue)}%</span>.`));
     else container.append($('<div>').html(`Change action delay for <span class="code">${toTargetName(data.TargetType)}</span>.`));
+  },
+  ModifyCurrentSkillDelayCost: function(data, container) {
+    container.append($('<div>').html(`Change current skill delay cost by <span class="code">${formulaView(data.NormalizedValue)}</span>.`));
   },
 
   ModifyTeamBoostPoint: function(data, container) {
@@ -530,6 +549,9 @@ var gamecoreFunctions =
 
   TurnInsertAbility: function(data, container) {
     container.append($('<div>').html(`Insert ability <span class="code">${toTargetName(data.TargetType)}</span>\'s <span class="code">${data.AbilityName}</span> ability, targetting <span class="code">${toTargetName(data.AbilityTarget)}</span> with priority <span class="code">${data.InsertAbilityPriority}</span>.`));
+  },
+  TurnInsertAction: function(data, container) {
+    container.append($('<div>').html(`Insert extra turn with ability <span class="code">${data.PrepareAbilityName}</span>.`));
   },
 
   Retarget: function(data, container) {
@@ -646,7 +668,9 @@ var gamecoreFunctions =
   SetControlSkillMapping: function(data, container) {
     container.append($('<div>').html(`Change <span class="code">${toTargetName(data.TargetType)}</span>\'s <span class="code">${data.ControlSkillType}</span> skill mapping to <span class="code">${data.SkillTriggerKey}</span>.`));
   },
-
+  ShowUltraSkillAlternative: function(data, container) {
+    container.append($('<div>').html(`Show ultimate options.`));
+  },
   SetBattleAchievement: function(data, container) {
     container.append($('<div>').html(`Give achievement <span class="code">${data.AchievementID}</span>.`));
   },
@@ -773,6 +797,10 @@ var gamecoreFunctions =
   
   VCameraConfigChange: function(data, container) {
     container.append($('<div class="minor">').html(`Apply camera settings.`));
+  },
+
+  TargetTimeSlow: function(data, container) {
+    container.append($('<div class="minor">').html(`Slow <span class="code">${toTargetName(data.TargetType)}</span>\'s time to <span class="code">${data.TimeScale}</span> for <span class="code">${data.UnscaledDuration}</span>s.`));
   },
 
   WaitSecond: function(data, container) {
