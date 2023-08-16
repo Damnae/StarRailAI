@@ -41,7 +41,7 @@
         container.append(content);
         
         var decisionsId = data.AIPath.replace('Config/ConfigAI/', '');
-        content.append($(`<a href="#${decisionsId}">`).html(`AI Decisions <span class="code">(${cleanupDecisionsName(decisionsId)})</span>`));
+        content.append($(`<a href="#${decisionsId}">`).html(`AI Decisions <span class="code">(${cleanupFileName(decisionsId)})</span>`));
         content.append(createExplanationView(data, function(c)
         {
           c.append($('<div>').text('Template'));
@@ -104,7 +104,7 @@
       {
         var container = $(`<div id="${characterFileData.path}" class="character">`);
 
-        var title = $(`<h2 class="section-opener">`).text(cleanupDecisionsName(characterFileData.path));
+        var title = $(`<h2 class="section-opener">`).text(cleanupFileName(characterFileData.path));
         var content = $(`<div class="section-content">`);
 
         container.append(title);
@@ -172,13 +172,6 @@
         var container = $(`<div class="characterSkill">`);
         container.append(createGamecoreView(data));
         return container;
-      }
-
-      // UTIL
-
-      function cleanupDecisionsName(path)
-      {
-        return path.replace(/_/g, " ").replace('.json', '');
       }
 
       // INITIALISATION

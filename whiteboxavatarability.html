@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang=en>
+  <head>
+
+    <meta charset=utf-8>
+    <title>StarRail AI - Whitebox Avatar Abilities</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="scripts/common.js"></script>
+    <script src="scripts/gamecore.js"></script>
+    <script src="scripts/abilities.js"></script>
+    <script src="scripts/characters.js"></script>
+    <script src="scripts/translation.js"></script>
+  </head>
+  <body>
+    
+    <div id="content">
+      <div class="half">
+        <h1>Whitebox Avatar Abilities</h1>
+        <div id="avatarContainer"></div>
+      </div>
+    </div>
+
+    <script>
+
+      // AVATAR
+
+      function createLocalAbilityView(fileData)
+      {
+        var container = $(`<div id="${fileData.path}" class="character">`);
+
+        var title = $(`<h2 class="section-opener">`).text(cleanupFileName(fileData.path));
+        var content = $(`<div class="section-content">`);
+
+        container.append(title);
+        container.append(content);
+
+        title.click(function(event) {
+          event.stopPropagation();
+          content.slideToggle();
+
+          if (!content.data('opened')) 
+          {
+            $.ajax({
+              url: 'https://raw.githubusercontent.com/Dimbreath/StarRailData/master/Config/ConfigAbility/WhiteBox/Avatar/' + fileData.path,
+              type: 'GET',
+              dataType: 'json',
+              cache: true,
+              success: function(data)
+              {
+                content.append(createCharacterDetailView(undefined, undefined, data));
+              },
+              error: function(xhr, status, error) 
+              {
+                console.error('Error:', error);
+              },
+            });
+            content.data('opened', true);
+          }
+        });
+
+        return container;
+      }
+
+      // INITIALISATION
+
+      function initialize()
+      {
+        $.ajax({
+          url: 'https://api.github.com/repos/Dimbreath/StarRailData/git/trees/master:Config/ConfigAbility/WhiteBox/Avatar',
+          type: 'GET',
+          dataType: 'json',
+          cache: true,
+          success: function(data)
+          {
+            var tree = data.tree;
+
+            var container = $('#avatarContainer');          
+            for (var i = 0; i < tree.length; i++) 
+            {
+              var file = tree[i];
+
+              if (file.type == 'blob')
+                container.append(createLocalAbilityView(file));
+            }
+          },
+          error: function(xhr, status, error) 
+          {
+            console.error('AI Config Error:', error);
+          },
+        });
+      }
+
+      $(function() { 
+        initializeTranslation()
+          .then(() => initializeAbilities('Avatar'))
+          .then(() => initialize());
+      });
+    </script>
+  </body>
+</html>

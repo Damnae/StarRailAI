@@ -28,3 +28,8 @@ function cleanupFloat(value)
 {
   return parseFloat(value.toFixed(4));
 }
+
+function cleanupFileName(path)
+{
+  return path.replace(/_/g, " ").replace('.json', '');
+}

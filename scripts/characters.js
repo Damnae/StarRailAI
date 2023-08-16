@@ -4,8 +4,9 @@ function createCharacterDetailView(configData, characterData, abilityData)
   var container = $(`<div class="characterDetail">`);
 
   var configSkills = configData?.SkillList;
-  var customValues = characterData.CustomValues;
-  var characterSkills = characterData.SkillList;
+  var customValues = characterData?.CustomValues;
+  var characterSkills = characterData?.SkillList;
+  var abilityList = abilityData?.AbilityList;
   var globalModifiers = abilityData?.GlobalModifiers;
 
   if (customValues != undefined)
@@ -34,34 +35,45 @@ function createCharacterDetailView(configData, characterData, abilityData)
     }
   }
 
-  container.append($('<h3>').text('Character Skills'));
-  for (var i = 0; i < characterSkills.length; i++)
+  if (characterSkills != undefined)
   {
-    var skill = characterSkills[i];
-
-    container.append($('<h4>').html(`${skill.Name} <span class="code">${skill.SkillType} / ${skill.UseType} / ${skill.TargetInfo?.TargetType} (${skillId})</span>`));
-
-    if (abilityData != undefined)
+    container.append($('<h3>').text('Character Skills'));
+    for (var i = 0; i < characterSkills.length; i++)
     {
-      var abilityNames = findSkillAbilities(skill.Name, characterData);
-      if (abilityNames != undefined)
+      var skill = characterSkills[i];
+
+      container.append($('<h4>').html(`${skill.Name} <span class="code">${skill.SkillType} / ${skill.UseType} / ${skill.TargetInfo?.TargetType} (${skillId})</span>`));
+      if (abilityData != undefined)
       {
-        for (var j = 0; j < abilityNames.length; j++)
+        var abilityNames = findSkillAbilities(skill.Name, characterData);
+        if (abilityNames != undefined)
         {
-          var abilityName = abilityNames[j];
-          var ability = findAbility(abilityName, abilityData);
+          for (var j = 0; j < abilityNames.length; j++)
+          {
+            var abilityName = abilityNames[j];
+            var ability = findAbility(abilityName, abilityData);
+            if (ability != undefined)
+              container.append(createAbilityView(ability));
+            else container.append($('<h5>').html(`<span class="code">${abilityName}</span> (missing)`));
+          }
+        }
+        else
+        {
+          var ability = findAbility(skill.EntryAbility, abilityData);
           if (ability != undefined)
             container.append(createAbilityView(ability));
-          else container.append($('<h5>').html(`<span class="code">${abilityName}</span> (missing)`));
+          else container.append($('<h5>').html(`<span class="code">${skill.EntryAbility}</span> (missing)`));
         }
       }
-      else
-      {
-        var ability = findAbility(skill.EntryAbility, abilityData);
-        if (ability != undefined)
-          container.append(createAbilityView(ability));
-        else container.append($('<h5>').html(`<span class="code">${skill.EntryAbility}</span> (missing)`));
-      }
+    }
+  }
+  else
+  {
+    container.append($('<h3>').text('Character Abilities'));
+    for (var i = 0; i < abilityList.length; i++)
+    {
+      var ability = abilityList[i];
+      container.append(createAbilityView(ability));
     }
   }
   
