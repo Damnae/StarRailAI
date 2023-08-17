@@ -471,6 +471,8 @@ var gamecoreFunctions =
   ModifySPNew: function(data, container) {
     if (data.AddValue != undefined)
       container.append($('<div>').html(`Add <span class="code">${formulaView(data.AddValue)}</span> flat energy to <span class="code">${toTargetName(data.TargetType)}</span>.`));
+    else if (data.FixedAddMaxSPRatio != undefined)
+        container.append($('<div>').html(`Add <span class="code">${formulaView(data.FixedAddMaxSPRatio)}</span>% energy to <span class="code">${toTargetName(data.TargetType)}</span>.`));
     else if (data.AddRatio != undefined)
       container.append($('<div>').html(`Add <span class="code">${formulaView(data.AddRatio)}</span> of the skill energy bonus to <span class="code">${toTargetName(data.TargetType)}</span>.`));
     else container.append($('<div>').html(`Change <span class="code">${toTargetName(data.TargetType)}</span>\'s energy.`));
