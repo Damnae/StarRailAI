@@ -221,40 +221,6 @@
 
       const groupSummaries = 
       {
-        BaseWeight: 'A plain weight with no condition.',        
-        Base_Common_BaseTypeFactor: 'A weight based on path, where Destruction = Hunt = Erudition > Nihility > Preservation = Abundance = 0',
-        Add01_Common_CompareEnemyDPT: 'Increases as the target DPT (damage potential?) increases.',
-        Add01_Common_EnemysNumber: 'Increases as the number of enemy alive increases (up to 5).',
-        Add01_Common_BuffDOT: 'Increases to extreme values with the number of DOT effects on the target.',
-        Add01_Common_CompareTeamSP: 'Increased as the target\'s(?) energy increases, 0 if energy is maxed.',
-        Add01_Common_TauntBuffShieldTaunt: 'Increased if the target is marked to be attacked by enemies.',
-        Add10_Common_BuffBurn: 'Increases if the target is NOT burning.',
-        Add10_Common_BuffFrozen: 'Increases if the target is NOT frozen.',
-        AddNP_Common_BPSkill: 'Increases as team skill points increase. Extremely negative at 0 skill points.',
-        AddpP_Common_SelfNeighbour: 'Increases abruptly when the target has 2 neighbors.',
-        BasePp_Common_SingleAttack: 'Increases as the target hp% decreases. Increases for weaker but not the weakest targets. Prevents use if the target is low priority.',
-        BasePp_Common_WeakBreak: 'Increases if the target is broken or weak to element. Prevents use if the target is low priority.',
-        Ultra_Common_SingleAttack: 'Increases as the target\'s hp% nears 50%. Prevents use if the target is low priority.',
-        Ultra_Common_ImmediateRelease: 'Maxed when Energy is maxed, used on ultimates to cause them to be used immediately',
-
-        Base_Bronya_CompareDPT: 'Increases as the target DPT (damage potential?) increases. Starts slow but very steep around 85%. Multiplied by path-specific weights, which are higher for damage oriented paths.',
-        Base_Tingyun_CompareDPT: 'Linearly increases as the target DPT (damage potential?) increases. Multiplied by path-specific weights, which are higher for damage oriented paths',
-        Base_Natasha_SingleHeal: 'Increases as the target hp% decreases. Reaches 0 at 80% hp',
-        Base_Mar7th_SingleShield: 'Increases as the target hp% decreases. Decreased on targets that already have March\'s shield.',
-        Add01_Pela_CompareEnemyED: 'Increases as the target ED(Enhanced Damage?) increases.',
-        Add01_Yukong_FlowerCheck: 'Increases if Yukong\'s buff isn\'t active. Prevents use if it is.',
-        Add10_Pela_BuffPelaBPSkill: 'Increases if the target does not have Pela\s DEF debuff.',
-        Add10_Seele_BuffSelfSpeedUp: 'Increases if Seele does not have her speed buff (2nd stack not taken into account).',
-        Add_QingQue_MajiangBuffLayer: 'Increases as QQ gets more tiles of the same kind.',
-        Add_Arlan_HpEffect: 'Increases as hp% increases. 0 under 15% hp; maxed at 50% hp.',
-        Add_Luka_ChargePoint: 'Increases to extreme values with the number of Bleed DOT effects on the target.',
-        Add_Player01_WeaponChargePoint: 'Increases to extreme values as Preservation Trailblazer\'s Magma Will stacks increase, or if they have a free use from their Ultimate.',
-        AddNP_Sushang_BPSkill_Break: 'Increases if the target is broken.',
-        AddPp_Ren_BpSkillHPPercent: 'Increases as hp% increases. Negative under 30% hp.',
-        Add01_Silwolf_DebuffNumber: 'Increases as the number of debuffs on the target increases (up to 5).',
-        Add01_Broyan_CompareActionDelay: 'Increases as the team member\'s action delay increases. Prevents use if the team member is ready.',
-        Add01_JingYuan_BpSkillEnemysNumber: 'Increases as the number of enemy alive increases (up to 5). Also increases with the target\'s strength.',
-        Ultra_Natasha_TeamHPCheck: 'Increases as the lowest team member\'s hp% decreases. Prevents use at or above 50% hp.',
       };
 
       function cleanCharacterJsonName(filename)
